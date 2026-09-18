@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Storage rules: anyone can view uploaded images / CV, only the admin can upload.
+// >>> TO REUSE THIS FOR YOUR OWN SITE: change the email below <<<
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in ['umidjonarslonov.analytics@gmail.com'];
+    }
+
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.size < 15 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
+    }
+  }
+}

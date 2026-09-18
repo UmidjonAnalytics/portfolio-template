@@ -1,0 +1,122 @@
+"use client";
+
+import { Award, ExternalLink, ZoomIn } from "lucide-react";
+import { useState } from "react";
+import { useLocale } from "@/lib/i18n";
+import { useSiteData } from "@/lib/site-data";
+import type { Certificate } from "@/lib/types";
+import { formatMonth, isSafeHttpUrl } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
+import { Reveal } from "@/components/ui/Reveal";
+import { Section } from "@/components/ui/Section";
+import { SmartImage } from "@/components/ui/SmartImage";
+
+function CertificateCard({ item, onOpen, index }: { item: Certificate; onOpen: () => void; index: number }) {
+  const { t, tr, lang } = useLocale();
+  const title = tr(item.title);
+  return (
+    <Reveal delay={index * 0.05} className="card overflow-hidden flex flex-col group">
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={t("certificates.viewFull", { title })}
+        className="relative aspect-[4/3] bg-surface-2 overflow-hidden text-left"
+      >
+        <SmartImage
+          src={item.image}
+          alt={title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          fallback={
+            <div className="absolute inset-0 flex items-center justify-center text-accent-strong/60">
+              <Award className="h-16 w-16" aria-hidden="true" />
+            </div>
+          }
+        />
+        <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-colors">
+          <span className="h-11 w-11 rounded-full bg-surface/90 text-fg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-card">
+            <ZoomIn className="h-5 w-5" aria-hidden="true" />
+          </span>
+        </span>
+      </button>
+      <div className="p-5 flex-1 flex flex-col">
+        <h3 className="font-semibold leading-snug">{title}</h3>
+        <p className="mt-1 text-sm text-muted">
+          {item.issuer}
+          {item.date && (
+            <>
+              {" · "}
+              <time dateTime={item.date}>{formatMonth(item.date, lang)}</time>
+            </>
+          )}
+        </p>
+        {item.credentialId && (
+          <p className="mt-3 text-xs text-muted">
+            {t("certificates.credentialId")}: <span className="font-mono font-bold text-fg-2">{item.credentialId}</span>
+          </p>
+        )}
+        {item.verifyUrl && isSafeHttpUrl(item.verifyUrl) && (
+          <div className="mt-4 pt-4 border-t border-line">
+            <Button href={item.verifyUrl} external variant="outline" size="sm">
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("certificates.verify")}
+            </Button>
+          </div>
+        )}
+      </div>
+    </Reveal>
+  );
+}
+
+export function Certificates() {
+  const { certificates } = useSiteData();
+  const { t, tr, lang } = useLocale();
+  const [active, setActive] = useState<Certificate | null>(null);
+  if (certificates.length === 0) return null;
+
+  return (
+    <Section id="certificates" eyebrow={t("nav.certificates")} title={t("certificates.title")} subtitle={t("certificates.subtitle")}>
+      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {certificates.map((c, i) => (
+          <li key={c.id}>
+            <CertificateCard item={c} index={i} onOpen={() => setActive(c)} />
+          </li>
+        ))}
+      </ul>
+
+      <Modal open={!!active} onClose={() => setActive(null)} size="xl" labelledBy="cert-title">
+        {active && (
+          <div className="p-4 sm:p-6">
+            <div className="relative aspect-[16/11] bg-surface-2 rounded-2xl overflow-hidden">
+              <SmartImage src={active.image} alt={tr(active.title)} fill sizes="90vw" className="object-contain" />
+            </div>
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+              <div>
+                <h3 id="cert-title" className="font-display text-xl font-semibold">
+                  {tr(active.title)}
+                </h3>
+                <p className="mt-1 text-muted">
+                  {t("certificates.issuedBy")} {active.issuer}
+                  {active.date && ` · ${formatMonth(active.date, lang)}`}
+                </p>
+                {active.credentialId && (
+                  <p className="mt-1 text-sm text-muted">
+                    {t("certificates.credentialId")}: <span className="font-mono font-bold text-fg-2">{active.credentialId}</span>
+                  </p>
+                )}
+              </div>
+              {active.verifyUrl && isSafeHttpUrl(active.verifyUrl) && (
+                <Button href={active.verifyUrl} external size="md">
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  {t("certificates.verify")}
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
+    </Section>
+  );
+}

@@ -1,0 +1,67 @@
+rules_version = '2';
+
+// ============================================================================
+// Firestore security rules for the portfolio.
+//
+//  - Anyone can READ published content (published == true) plus the public
+//    "site" documents (profile, settings) and "media" (uploaded images).
+//  - Only the admin (see adminEmails below) can WRITE anything.
+//  - Visitors can CREATE a contact message, but never read/list messages.
+//
+// >>> TO REUSE THIS FOR YOUR OWN SITE: change the email in adminEmails() <<<
+// ============================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function adminEmails() {
+      return ['umidjonarslonov.analytics@gmail.com'];
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in adminEmails();
+    }
+
+    function isPublished() {
+      return resource.data.published == true;
+    }
+
+    // Profile + settings: public read, admin write.
+    match /site/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Uploaded images / files stored inline (used when Firebase Storage is not
+    // available on the free plan). Public read, admin write.
+    match /media/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Content collections: public can only read published items.
+    match /skills/{id}        { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /projects/{id}      { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /experience/{id}    { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /certificates/{id}  { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /education/{id}     { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /testimonials/{id}  { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+    match /blog/{id}          { allow read: if isPublished() || isAdmin(); allow write: if isAdmin(); }
+
+    // Contact form inbox: create-only for visitors, full access for admin.
+    match /messages/{id} {
+      allow create: if isAdmin() || request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'read', 'locale'])
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120
+        && request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() <= 200
+        && request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 4000
+        && request.resource.data.read == false;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Everything else is locked.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
