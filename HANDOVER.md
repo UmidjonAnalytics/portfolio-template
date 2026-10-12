@@ -27,20 +27,28 @@ cannot log in or edit anything.
 
 ## 2. The code (GitHub)
 
-**Recommended: keep your copy, give Abror his own.** You plan to reuse this codebase for other
-students, so do not transfer the repository away. Instead:
+**Plan: keep a template copy for yourself first, then transfer the original to Abror.**
 
-1. Open your repo → **Settings** → scroll to **Template repository** → tick the box.
-2. Send Abror the repo link. He clicks **Use this template** → **Create a new repository**, which
-   gives him an independent copy under `AshurovAS` that you no longer control.
-3. Your repo stays as the master template for the next student.
+GitHub will not let you fork your own repository into the same account, so make the copy by pushing
+the local folder to a brand-new repository:
 
-**Alternative, if you want to hand the repository itself over:** repo → Settings → Danger Zone →
-**Transfer ownership** → type `AshurovAS`. You lose access unless he adds you back, so fork it to
-your own account first if you want to keep a copy.
+```bash
+gh repo create UmidjonAnalytics/portfolio-template --public --source=. --remote=template --push
+```
 
-**Simplest middle ground:** repo → Settings → Collaborators → **Add people** → `AshurovAS`. You both
-keep full access to the same repository.
+That gives you `portfolio-template`, an independent repo with the full history, which becomes your
+master copy for the next student.
+
+Then hand over the original: repo → **Settings** → **Danger Zone** → **Transfer ownership** → type
+`AshurovAS` and the repo name to confirm. He receives an invitation and has to accept it.
+
+Afterwards, point your local folder at your own copy so future edits do not go to his repo:
+
+```bash
+git remote set-url origin https://github.com/UmidjonAnalytics/portfolio-template.git
+```
+
+GitHub keeps a redirect from the old URL, so any old links still work.
 
 ---
 
@@ -70,8 +78,16 @@ The project is on the free Spark plan, so there is no billing account to transfe
 
 ## 4. Hosting (Vercel)
 
-Vercel cannot move a project between personal accounts directly, so the clean way is for Abror to
-deploy his own copy:
+This is the one place where transferring is **harder** than starting fresh, so it is the exception
+to the "transfer everything" plan.
+
+Vercel does have a Transfer Project feature (project → Settings → General → Transfer Project), but
+you must be a member of both the source and the destination scope. Two unrelated personal accounts
+do not satisfy that, so transferring would mean creating a throwaway team, inviting him, moving the
+project in, and having him move it out. Redeploying takes about three minutes instead, and the only
+thing lost is the deployment history and analytics, which are worth nothing on a site this new.
+
+So let Abror deploy his own:
 
 1. Abror creates a Vercel account and signs in with GitHub.
 2. **Add New → Project** → imports his copy of the repository.
@@ -158,11 +174,22 @@ handover. Remove yours once he is set up.
 ## Quick order of operations
 
 1. Confirm the correct email address.
-2. Make the repo a template, tell Abror to create his copy.
-3. Add him as Firebase Owner, create his Auth user, send the password privately.
-4. He deploys to his own Vercel and adds the env vars.
-5. Add his Vercel URL to Firebase authorized domains.
-6. He logs in to `/admin` and confirms he can edit.
+2. Push your own template copy (`portfolio-template`), then transfer the original repo to
+   `AshurovAS` and repoint your local `origin`.
+3. Add him as Firebase **Owner**, create his Auth user, send the password privately.
+4. He deploys to his own Vercel from his repo and adds the env vars.
+5. Add his Vercel URL to Firebase → Authentication → Authorized domains.
+6. **He logs in to `/admin` and confirms he can edit.** Do not go past this step until he has.
 7. Move the domain, if there is one.
-8. Only then: remove your email from the admin lists, redeploy rules, delete your Firebase user,
-   remove yourself from the Firebase project, delete your Vercel project.
+8. Only then hand over the last keys: remove your email from the admin lists in both rules files,
+   run `npm run deploy:rules`, delete your Firebase Auth user, remove yourself under Firebase
+   Users and permissions, and delete your old Vercel project.
+
+Step 8 is the point of no return. Once you remove yourself from the Firebase project you cannot
+undo it yourself — only Abror can add you back.
+
+### What you keep for the next student
+
+Your `portfolio-template` repo is all you need. Each new student gets a **new, free Firebase
+project** of their own anyway, so you lose nothing by giving this one away. Setting up the next one
+is the five-step list in the README under "Setting up a new copy".
