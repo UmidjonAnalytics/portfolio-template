@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Portfolio sayt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e11;
+    --surface: #14171c;
+    --surface-2: #1b1f26;
+    --line: #262c35;
+    --fg: #eef0f2;
+    --fg-2: #c7ccd3;
+    --muted: #98a0ab;
+    --accent: #0f8b8d;
+    --accent-2: #3cc5c7;
+    --gold: #f2c14e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body {
+    font-family: "Manrope", system-ui, sans-serif;
+    color: var(--fg);
+    position: relative;
+    background:
+      radial-gradient(60% 30% at 10% 4%, rgba(15,139,141,.34), transparent 70%),
+      radial-gradient(45% 25% at 95% 30%, rgba(15,139,141,.18), transparent 70%),
+      radial-gradient(60% 25% at 50% 100%, rgba(15,139,141,.22), transparent 70%),
+      var(--bg);
+  }
+  .wrap { position: relative; height: 100%; padding: 76px 80px 72px; display: flex; flex-direction: column; }
+
+  .brand { display: flex; align-items: center; justify-content: space-between; }
+  .brand .tag { font-weight: 800; font-size: 24px; letter-spacing: .24em; text-transform: uppercase; color: var(--accent-2); }
+  .brand .langs { display: flex; gap: 6px; padding: 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+  .brand .langs span { font-weight: 800; font-size: 20px; padding: 8px 16px; border-radius: 999px; color: var(--muted); }
+  .brand .langs span.on { background: var(--accent); color: #fff; }
+
+  h1 { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 80px; line-height: 1.04; letter-spacing: -.02em; margin: 36px 0 0; }
+  h1 em { font-style: normal; color: var(--accent-2); }
+  .sub { margin: 22px 0 0; font-size: 32px; line-height: 1.4; color: var(--fg-2); font-weight: 500; }
+  .sub b { color: var(--fg); font-weight: 800; }
+
+  /* Browser mock */
+  .browser { flex: none; margin-top: 32px; border: 1px solid var(--line); border-radius: 28px; background: var(--surface); overflow: hidden; box-shadow: 0 40px 80px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(60,197,199,.08); }
+  .bar { height: 62px; display: flex; align-items: center; gap: 12px; padding: 0 22px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #3a414c; }
+  .url { margin-left: 18px; flex: 1; height: 38px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); display: flex; align-items: center; gap: 10px; padding: 0 18px; font-weight: 700; font-size: 21px; color: var(--fg); }
+  .url svg { width: 18px; height: 18px; color: var(--accent-2); }
+  .url .live { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 17px; color: #4ade80; font-weight: 800; }
+  .url .live i { width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 12px #4ade80; }
+  .screen { padding: 22px 34px; display: flex; gap: 30px; align-items: center;
+    background: radial-gradient(60% 90% at 0% 0%, rgba(15,139,141,.25), transparent 70%); }
+  .screen .left { flex: 1; }
+  .screen .hi { font-size: 15px; font-weight: 800; letter-spacing: .2em; color: var(--accent-2); }
+  .screen .name { font-family: "Unbounded", sans-serif; font-weight: 600; font-size: 40px; margin-top: 8px; }
+  .screen .role { font-size: 22px; font-weight: 700; color: var(--accent-2); margin-top: 6px; }
+  .screen .btns { display: flex; gap: 10px; margin-top: 18px; }
+  .screen .btns span { height: 36px; padding: 0 18px; border-radius: 999px; display: flex; align-items: center; font-size: 15px; font-weight: 800; }
+  .screen .btns .p { background: var(--accent); color: #fff; }
+  .screen .btns .s { border: 1px solid var(--line); color: var(--fg-2); }
+  .chart { width: 240px; height: 150px; border-radius: 18px; border: 1px solid var(--line); background: var(--bg); padding: 18px; display: flex; align-items: flex-end; gap: 12px; }
+  .chart b { flex: 1; border-radius: 6px 6px 2px 2px; background: linear-gradient(to top, var(--accent), var(--accent-2)); }
+  .photo { flex: none; width: 140px; height: 170px; border-radius: 20px; background: linear-gradient(160deg, #2a4b5a, #3f6f8a); position: relative; overflow: hidden; }
+  .photo::before { content: ""; position: absolute; left: 50%; top: 34px; width: 62px; height: 62px; margin-left: -31px; border-radius: 50%; background: #b9d4dd; }
+  .photo::after { content: ""; position: absolute; left: 50%; bottom: -40px; width: 120px; height: 110px; margin-left: -60px; border-radius: 50% 50% 0 0; background: #b9d4dd; }
+
+  /* Features */
+  .grid { flex: none; margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .tile { min-height: 150px; border: 1px solid var(--line); border-radius: 24px; background: rgba(20,23,28,.85); padding: 20px 22px; display: flex; flex-direction: column; justify-content: flex-start; }
+  .tile .ic { flex: none; width: 44px; height: 44px; border-radius: 14px; background: rgba(15,139,141,.2); color: var(--accent-2); display: flex; align-items: center; justify-content: center; }
+  .tile .ic svg { width: 24px; height: 24px; }
+  .tile .t { margin-top: 12px; font-weight: 800; font-size: 25px; line-height: 1.15; }
+  .tile .d { margin-top: 4px; font-size: 19px; color: var(--muted); font-weight: 600; line-height: 1.25; }
+
+  /* Bottom */
+  .bottom { flex: none; margin-top: 28px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; }
+  .price { border-radius: 28px; padding: 30px 32px; background: linear-gradient(140deg, #0f8b8d, #0a5f61); box-shadow: 0 24px 60px -20px rgba(15,139,141,.6); }
+  .price .l { font-size: 20px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.8); }
+  .price .v { font-family: "Unbounded", sans-serif; font-weight: 700; font-size: 60px; line-height: 1.05; margin-top: 12px; color: #fff; white-space: nowrap; }
+  .price .v small { font-size: 34px; }
+  .bonus { border-radius: 28px; padding: 28px 30px; border: 1px dashed rgba(242,193,78,.55); background: rgba(242,193,78,.07); display: flex; gap: 20px; align-items: center; }
+  .bonus .ic { flex: none; width: 64px; height: 64px; border-radius: 20px; background: rgba(242,193,78,.18); color: var(--gold); display: flex; align-items: center; justify-content: center; }
+  .bonus .ic svg { width: 34px; height: 34px; }
+  .bonus .t { font-weight: 800; font-size: 25px; color: var(--gold); }
+  .bonus .d { margin-top: 6px; font-size: 21px; line-height: 1.35; color: var(--fg-2); font-weight: 600; }
+
+  .note { margin: auto 0 0; padding-top: 24px; text-align: center; font-size: 19px; color: var(--muted); font-weight: 500; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="tag">/ Portfolio sayt</div>
+    <div class="langs"><span class="on">UZ</span><span>RU</span><span>EN</span></div>
+  </div>
+
+  <h1>O‘z saytingiz.<br>O‘z domeningiz.<br><em>3 tilda.</em></h1>
+  <p class="sub">Ish beruvchiga oddiy rezyume emas — <b>shaxsiy saytingiz havolasini</b> yuboring.</p>
+
+  <div class="browser">
+    <div class="bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <div class="url">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        ismingiz.uz
+        <span class="live"><i></i>24/7 onlayn</span>
+      </div>
+    </div>
+    <div class="screen">
+      <div class="left">
+        <div class="hi">SALOM, MEN</div>
+        <div class="name">Ismingiz</div>
+        <div class="role">Data Analyst</div>
+        <div class="btns"><span class="p">Loyihalar</span><span class="s">Rezyume</span><span class="s">Aloqa</span></div>
+      </div>
+      <div class="chart"><b style="height:38%"></b><b style="height:55%"></b><b style="height:47%"></b><b style="height:72%"></b><b style="height:64%"></b><b style="height:92%"></b></div>
+      <div class="photo"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div class="t">Shaxsiy domen</div><div class="d">ismingiz.uz</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="t">24/7 onlayn</div><div class="d">kecha-kunduz ishlaydi</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg></div>
+      <div class="t">3 tilda</div><div class="d">o‘zbek, rus, ingliz</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="10" rx="2"/><path d="M6 18h6"/><path d="M9 14v4"/><rect x="17" y="8" width="5" height="12" rx="1"/></svg></div>
+      <div class="t">Har qanday ekran</div><div class="d">telefon va kompyuterda</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div>
+      <div class="t">Loyihalar</div><div class="d">interaktiv grafiklar bilan</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+      <div class="t">Sertifikatlar</div><div class="d">tajriba va ta’lim bilan</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div>
+      <div class="t">Rezyume</div><div class="d">bir bosishda yuklab olinadi</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+      <div class="t">Aloqa formasi</div><div class="d">xabarlar to‘g‘ri sizga</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div>
+      <div class="t">Ikki rejim</div><div class="d">yorug‘ va qorong‘i</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M1 14h6"/><path d="M9 8h6"/><path d="M17 16h6"/></svg></div>
+      <div class="t">Admin panel</div><div class="d">dasturchisiz boshqarasiz</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <div class="t">To‘ldirib beraman</div><div class="d">hammasini joylayman</div>
+    </div>
+    <div class="tile">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div>
+      <div class="t">Oylik to‘lovsiz</div><div class="d">hosting uchun</div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="price">
+      <div class="l">Narxi</div>
+      <div class="v">450 000<br><small>so‘m</small></div>
+    </div>
+    <div class="bonus">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 11 4.5 12 8c1-3.5 3-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div>
+      <div>
+        <div class="t">O‘quvchilarim uchun bonus</div>
+        <div class="d">1:1 videoqo‘ng‘iroq — portfolio va ish izlash bo‘yicha shaxsiy tavsiyalar</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Sayt ishga joylashishni kafolatlamaydi, lekin sizni ish beruvchi oldida professional ko‘rsatadi.</p>
+
+</div>
+</body>
+</html>
