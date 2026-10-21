@@ -5,7 +5,7 @@ import { CrudPage, type CrudConfig } from "@/components/admin/CrudPage";
 import { Field, Input, LocalizedInput, LocalizedListInput } from "@/components/admin/fields";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, emptyLocalizedList, type Experience } from "@/lib/types";
-import { formatMonth } from "@/lib/utils";
+import { filled, formatMonth } from "@/lib/utils";
 
 function ExperienceForm({ value, onChange }: { value: Experience; onChange: (v: Experience) => void }) {
   const { t } = useLocale();
@@ -37,7 +37,7 @@ const config: Omit<CrudConfig<Experience>, "Form"> = {
   getTitle: (e, tr) => `${tr(e.role)} — ${e.company}`,
   getSubtitle: (e, _tr, t) => `${formatMonth(e.startDate, "en")} — ${formatMonth(e.endDate, "en", t("experience.present"))}`,
   newItem: () => ({ company: "", role: emptyLocalized(), location: emptyLocalized(), startDate: "", endDate: "", bullets: emptyLocalizedList() }),
-  validate: (e, t) => (e.company.trim() && e.role.en.trim() ? null : t("admin.form.requiredEn")),
+  validate: (e, t) => (e.company.trim() && filled(e.role) ? null : t("admin.form.requiredEn")),
 };
 
 export default function ExperiencePage() {

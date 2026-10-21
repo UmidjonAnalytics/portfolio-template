@@ -52,7 +52,7 @@ export function Footer() {
         )}
 
         <div className="flex items-center gap-3 flex-wrap">
-          <LangSwitcher />
+          <LangSwitcher langs={settings.languages} />
           <ThemeToggle />
           <a
             href="#top"

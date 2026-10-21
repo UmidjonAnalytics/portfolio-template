@@ -5,7 +5,7 @@
 export type Lang = "en" | "ru" | "uz";
 export const LANGS: Lang[] = ["en", "ru", "uz"];
 
-/** A string stored in three languages. English is required, others fall back to it. */
+/** A string stored in up to three languages. Missing languages fall back to another filled one. */
 export type Localized = { en: string; ru?: string; uz?: string };
 /** A list of strings (bullets, titles…) stored in three languages. */
 export type LocalizedList = { en: string[]; ru?: string[]; uz?: string[] };
@@ -77,6 +77,8 @@ export interface Profile {
 export interface SiteSettings {
   siteName: string;
   accentColor: string;
+  /** Languages offered to visitors. With one language the switcher is hidden. */
+  languages: Lang[];
   defaultLang: Lang;
   defaultTheme: Theme;
   sections: Record<SectionKey, boolean>;
@@ -251,6 +253,7 @@ export const defaultProfile = (): Profile => ({
 export const defaultSettings = (): SiteSettings => ({
   siteName: "",
   accentColor: DEFAULT_ACCENT,
+  languages: [...LANGS],
   defaultLang: "en",
   defaultTheme: "system",
   sections: {

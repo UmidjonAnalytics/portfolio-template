@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { useCollection, useDocument } from "./hooks";
 import { DEFAULTS_STORAGE_KEY, useLocale } from "./i18n";
+import { normalizeLangs } from "./utils";
 import { useTheme } from "./theme";
 import {
   defaultProfile,
@@ -69,7 +70,14 @@ export function mergeSettings(data: Partial<SiteSettings> | null | undefined): S
     seoTitle: { ...base.seoTitle, ...(data.seoTitle ?? {}) },
     seoDescription: { ...base.seoDescription, ...(data.seoDescription ?? {}) },
     embedAllowlist: data.embedAllowlist ?? base.embedAllowlist,
+    ...langDefaults(data),
   };
+}
+
+function langDefaults(data: Partial<SiteSettings>): Pick<SiteSettings, "languages" | "defaultLang"> {
+  const languages = normalizeLangs(data.languages);
+  const defaultLang = data.defaultLang && languages.includes(data.defaultLang) ? data.defaultLang : languages[0];
+  return { languages, defaultLang };
 }
 
 export function SiteDataProvider({ children, mode = "public" }: { children: React.ReactNode; mode?: "public" | "admin" }) {
@@ -88,7 +96,7 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
     sort: (items) => [...items].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0)),
   });
 
-  const { applyDefault: applyDefaultLang } = useLocale();
+  const { applyDefault: applyDefaultLang, lang, setLang } = useLocale();
   const { applyDefault: applyDefaultTheme, applyAccent } = useTheme();
 
   const profile = useMemo(() => mergeProfile(profileDoc.data), [profileDoc.data]);
@@ -110,6 +118,12 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
       /* ignore */
     }
   }, [settingsDoc.loading, settings.defaultLang, settings.defaultTheme, settings.accentColor, applyDefaultLang, applyDefaultTheme, applyAccent]);
+
+  // On the public site, never show a language the owner switched off.
+  useEffect(() => {
+    if (mode !== "public" || settingsDoc.loading) return;
+    if (!settings.languages.includes(lang)) setLang(settings.defaultLang);
+  }, [mode, settingsDoc.loading, settings.languages, settings.defaultLang, lang, setLang]);
 
   const value = useMemo<SiteData>(() => {
     const lists: Record<SectionKey, { items: unknown[]; loading: boolean }> = {

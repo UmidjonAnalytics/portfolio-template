@@ -6,6 +6,7 @@ import { Field, Input, LocalizedInput, NumberInput } from "@/components/admin/fi
 import { ImageField } from "@/components/admin/MediaField";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, type Testimonial } from "@/lib/types";
+import { filled } from "@/lib/utils";
 
 function TestimonialForm({ value, onChange }: { value: Testimonial; onChange: (v: Testimonial) => void }) {
   const { t } = useLocale();
@@ -41,7 +42,7 @@ const config: Omit<CrudConfig<Testimonial>, "Form"> = {
   getThumb: (x) => x.avatar,
   squareThumb: true,
   newItem: () => ({ name: "", role: emptyLocalized(), company: "", quote: emptyLocalized(), avatar: "", rating: 5 }),
-  validate: (x, t) => (x.name.trim() && x.quote.en.trim() ? null : t("admin.form.requiredEn")),
+  validate: (x, t) => (x.name.trim() && filled(x.quote) ? null : t("admin.form.requiredEn")),
 };
 
 export default function TestimonialsPage() {

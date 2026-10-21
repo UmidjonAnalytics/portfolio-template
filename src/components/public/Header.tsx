@@ -107,7 +107,7 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <div className="hidden sm:block">
-              <LangSwitcher compact />
+              <LangSwitcher compact langs={settings.languages} />
             </div>
             <ThemeToggle />
             <button
@@ -165,7 +165,7 @@ export function Header() {
                 ))}
               </ul>
               <div className="p-5 border-t border-line flex items-center justify-between gap-3">
-                <LangSwitcher />
+                <LangSwitcher langs={settings.languages} />
                 <ThemeToggle />
               </div>
             </motion.nav>

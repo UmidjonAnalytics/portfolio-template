@@ -5,7 +5,7 @@ import { CrudPage, type CrudConfig } from "@/components/admin/CrudPage";
 import { Field, Input, LocalizedInput } from "@/components/admin/fields";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, type Education } from "@/lib/types";
-import { formatMonth } from "@/lib/utils";
+import { filled, formatMonth } from "@/lib/utils";
 
 function EducationForm({ value, onChange }: { value: Education; onChange: (v: Education) => void }) {
   const { t } = useLocale();
@@ -35,7 +35,7 @@ const config: Omit<CrudConfig<Education>, "Form"> = {
   getTitle: (e, tr) => tr(e.school),
   getSubtitle: (e, tr) => [tr(e.degree), tr(e.field), e.startDate ? `${formatMonth(e.startDate, "en")} — ${formatMonth(e.endDate, "en", "…")}` : ""].filter(Boolean).join(" · "),
   newItem: () => ({ school: emptyLocalized(), degree: emptyLocalized(), field: emptyLocalized(), startDate: "", endDate: "", description: emptyLocalized() }),
-  validate: (e, t) => (e.school.en.trim() ? null : t("admin.form.requiredEn")),
+  validate: (e, t) => (filled(e.school) ? null : t("admin.form.requiredEn")),
 };
 
 export default function EducationPage() {

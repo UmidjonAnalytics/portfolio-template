@@ -9,7 +9,7 @@ hidden until the first item is published, so an empty portfolio still looks fini
 Storage) · Framer Motion · Recharts · Tiptap · dnd-kit · Vercel.
 
 Companion docs: [DATA-MODEL.md](DATA-MODEL.md) · [STUDENT-GUIDE.md](STUDENT-GUIDE.md) ·
-[DECISIONS.md](DECISIONS.md) · [CHECKLIST.md](CHECKLIST.md) · [HANDOVER.md](HANDOVER.md) · [PRODUCT-PLAN.md](PRODUCT-PLAN.md)
+[DECISIONS.md](DECISIONS.md) · [CHECKLIST.md](CHECKLIST.md) · [HANDOVER.md](HANDOVER.md) · [PRODUCT-PLAN.md](PRODUCT-PLAN.md) · [INTAKE.md](INTAKE.md)
 
 ---
 
@@ -18,6 +18,8 @@ Companion docs: [DATA-MODEL.md](DATA-MODEL.md) · [STUDENT-GUIDE.md](STUDENT-GUI
 - **Public site** (`/`): hero, about, skills, projects, experience, certificates, education,
   testimonials, blog, contact. Everything except hero / about / contact is Firestore-driven and
   disappears (section **and** nav link) when it has zero published items.
+- **Intake form** (`/forma`, owner's deployment only): a 9-step Uzbek questionnaire that customers fill
+  after paying; its answers export as one file that a customer site imports. See [INTAKE.md](INTAKE.md).
 - **Admin panel** (`/admin`): Firebase email/password login, dashboard with completeness checklist,
   full CRUD for every collection with EN/RU/UZ tabs, drag-and-drop ordering, publish/draft toggles,
   image + CV upload, inbox, site settings, seed / clear demo data.
@@ -87,6 +89,7 @@ Project settings → Your apps.
 | `NEXT_PUBLIC_MEDIA_MODE` | `auto` (default), `storage` or `firestore` — where uploads are kept |
 | `NEXT_PUBLIC_SITE_URL` | Public URL, used for Open Graph metadata |
 | `NEXT_PUBLIC_USE_EMULATORS` | `true` only when developing against the local emulators |
+| `NEXT_PUBLIC_INTAKE_ENABLED` | `true` only on your own deployment: turns on the intake form at `/forma` and Admin → Buyurtmalar. See [INTAKE.md](INTAKE.md) |
 | `SEED_EMAIL`, `SEED_PASSWORD` | Admin credentials used **only** by `npm run seed` on your machine |
 
 All `NEXT_PUBLIC_*` values are safe to expose: Firebase web config is public by design and the

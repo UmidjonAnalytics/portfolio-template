@@ -1,4 +1,4 @@
-import type { Lang, Localized, LocalizedList } from "./types";
+import { LANGS, type Lang, type Localized, type LocalizedList } from "./types";
 
 export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(" ");
@@ -12,6 +12,18 @@ export function pick(value: Localized | string | undefined | null, lang: Lang): 
   if (v && v.trim()) return v;
   if (value.en && value.en.trim()) return value.en;
   return value.ru?.trim() || value.uz?.trim() || "";
+}
+
+/** True when at least one language of a localized value has text. */
+export function filled(value: Localized | undefined | null): boolean {
+  if (!value) return false;
+  return LANGS.some((l) => !!value[l]?.trim());
+}
+
+/** Normalise a language list from settings: known languages only, never empty. */
+export function normalizeLangs(value: unknown): Lang[] {
+  const list = Array.isArray(value) ? LANGS.filter((l) => value.includes(l)) : [];
+  return list.length ? list : [...LANGS];
 }
 
 export function pickList(value: LocalizedList | undefined | null, lang: Lang): string[] {
@@ -37,15 +49,27 @@ export function uid(): string {
 }
 
 function localeOf(lang: Lang): string {
-  return lang === "uz" ? "uz-Latn-UZ" : lang === "ru" ? "ru-RU" : "en-US";
+  return lang === "ru" ? "ru-RU" : "en-US";
 }
 
-/** "2024-03" -> "Mar 2024" in the given locale. Empty -> present label. */
+/**
+ * Browsers ship no Uzbek month names (Chrome renders "2024 M03"), so Uzbek dates are
+ * formatted by hand in the usual style: "Mar 2024", "15-mart 2024".
+ */
+const UZ_MONTHS_SHORT = ["Yan", "Fev", "Mar", "Apr", "May", "Iyn", "Iyl", "Avg", "Sen", "Okt", "Noy", "Dek"];
+const UZ_MONTHS_LONG = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
+
+function uzDate(d: Date): string {
+  return `${d.getDate()}-${UZ_MONTHS_LONG[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** "2024-03" -> "Mar 2024" in the given language. Empty -> present label. */
 export function formatMonth(ym: string | undefined, lang: Lang, presentLabel = ""): string {
   if (!ym) return presentLabel;
   const [y, m] = ym.split("-").map(Number);
   if (!y) return ym;
   const d = new Date(y, (m || 1) - 1, 1);
+  if (lang === "uz") return `${UZ_MONTHS_SHORT[d.getMonth()]} ${y}`;
   try {
     return new Intl.DateTimeFormat(localeOf(lang), { month: "short", year: "numeric" }).format(d);
   } catch {
@@ -57,6 +81,7 @@ export function formatDate(iso: string | number | undefined, lang: Lang): string
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return String(iso);
+  if (lang === "uz") return uzDate(d);
   try {
     return new Intl.DateTimeFormat(localeOf(lang), { day: "numeric", month: "short", year: "numeric" }).format(d);
   } catch {
@@ -66,10 +91,12 @@ export function formatDate(iso: string | number | undefined, lang: Lang): string
 
 export function formatDateTime(ts: number | undefined, lang: Lang): string {
   if (!ts) return "";
+  const d = new Date(ts);
+  if (lang === "uz") return `${uzDate(d)}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   try {
-    return new Intl.DateTimeFormat(localeOf(lang), { dateStyle: "medium", timeStyle: "short" }).format(new Date(ts));
+    return new Intl.DateTimeFormat(localeOf(lang), { dateStyle: "medium", timeStyle: "short" }).format(d);
   } catch {
-    return new Date(ts).toLocaleString();
+    return d.toLocaleString();
   }
 }
 

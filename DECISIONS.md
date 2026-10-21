@@ -97,3 +97,31 @@ Judgment calls made while building, and why. Read this before changing the archi
   so the project is deploy-ready but not deployed. Import the repo in the Vercel dashboard, paste the
   `NEXT_PUBLIC_*` variables, and add the Vercel domain to Firebase → Authentication → Authorized
   domains.
+
+## Intake form (added 2026-10-21)
+
+- **Our own form instead of Google Forms.** Answers are saved in the site's own data shape and
+  exported as one file that a customer site imports, so nothing is retyped. Google Forms cannot
+  autosave drafts across devices, preview uploads, or validate per step.
+- **The order code is the key.** No customer accounts: an 8-character random code (about 850
+  billion possibilities) in the link is what lets someone open, save and submit one form. Codes
+  cannot be listed, and submitting locks the form until the owner reopens it.
+- **Files in Firestore, split into chunks.** Cloud Storage needs Blaze. A Firestore document is
+  capped at 1 MiB, so files are stored as data-URI pieces of about 900 KB. Customers can upload but
+  never read files back; tiny previews live inside the form document instead. The same chunking was
+  added to customer sites' media, which previously capped CVs at 700 KB.
+- **A file in between, not a cross-project connection.** The orders project and each customer's
+  project are different Firebase projects. Moving data as one downloaded JSON file needs no shared
+  credentials and works the same for every customer.
+- **Uzbek only, no translation.** Text is imported in the language the customer wrote it in.
+- **Language toggle built.** Sites can now offer one, two or three languages. The switcher hides
+  disabled languages, and disappears when only one is left.
+- **Any-language validation.** The admin panel used to require an English version of every text,
+  which would have made an Uzbek-only site uneditable. It now requires at least one language.
+- **Uzbek dates formatted by hand.** Chrome ships no Uzbek month names and printed "2024 M03". The
+  site now writes "Mar 2024" and "15-mart 2024".
+- **Verified on the emulator** end to end: a code issued in the admin, the whole form filled as an
+  anonymous visitor on a 375 px screen, resumed after a reload from Firestore alone, submitted,
+  exported, imported into a site, and the public site checked. 24 rule checks were run as an
+  anonymous visitor and as the admin. Testing caught one bug before release: a PDF has no preview,
+  and that empty field made Firestore reject every later autosave. It is fixed.

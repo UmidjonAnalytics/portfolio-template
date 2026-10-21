@@ -1,9 +1,8 @@
 "use client";
 
-import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref as storageRef, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "./firebase";
-import type { MediaDoc } from "./types";
+import { getMedia, putMedia, removeMedia } from "./media-store";
 import { uid } from "./utils";
 
 /**
@@ -22,7 +21,8 @@ export type MediaMode = "storage" | "firestore";
 const MODE_STORAGE_KEY = "media-mode-resolved";
 
 const FIRESTORE_IMAGE_LIMIT = 650 * 1024; // bytes of the *compressed* file (base64 adds ~33 %)
-const FIRESTORE_FILE_LIMIT = 700 * 1024;
+/** Larger files are split across chunk documents (see media-store.ts). */
+const FIRESTORE_FILE_LIMIT = 10 * 1024 * 1024;
 const STORAGE_FILE_LIMIT = 15 * 1024 * 1024;
 
 export function configuredMediaMode(): MediaMode | "auto" {
@@ -78,9 +78,7 @@ export function resolveMedia(ref: string | undefined | null): Promise<string> {
   const id = ref.slice(6);
   let p = cache.get(id);
   if (!p) {
-    p = getDoc(doc(db, "media", id))
-      .then((snap) => (snap.exists() ? ((snap.data() as MediaDoc).dataUrl ?? "") : ""))
-      .catch(() => "");
+    p = getMedia(db, id).catch(() => "");
     cache.set(id, p);
   }
   return p;
@@ -177,13 +175,11 @@ async function uploadToFirestore(blob: Blob, name: string, contentType: string, 
   if (blob.size > limit) throw new Error("too-large");
   const dataUrl = await blobToDataUrl(blob);
   const id = uid();
-  const docData: MediaDoc = { dataUrl, type: contentType, size: blob.size, name, createdAt: Date.now() };
   opts.onProgress?.(50);
-  await setDoc(doc(db, "media", id), docData);
+  await putMedia(db, id, { dataUrl, type: contentType, size: blob.size, name });
   opts.onProgress?.(100);
-  const ref = `media:${id}`;
   cache.set(id, Promise.resolve(dataUrl));
-  return ref;
+  return `media:${id}`;
 }
 
 function storageUnavailable(err: unknown): boolean {
@@ -246,7 +242,7 @@ export async function deleteMedia(ref: string | undefined | null): Promise<void>
   if (!ref) return;
   try {
     if (ref.startsWith("media:")) {
-      await deleteDoc(doc(db, "media", ref.slice(6)));
+      await removeMedia(db, ref.slice(6));
       cache.delete(ref.slice(6));
     } else if (ref.includes("firebasestorage") || ref.includes("/o/")) {
       await deleteObject(storageRef(storage, ref));

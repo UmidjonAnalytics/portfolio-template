@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/admin/AdminShell";
 import { useAuth } from "@/lib/auth";
 import { useLocale } from "@/lib/i18n";
 import { useSiteData } from "@/lib/site-data";
-import { cn, stripHtml } from "@/lib/utils";
+import { cn, filled, pick, stripHtml } from "@/lib/utils";
 
 interface Check {
   key: string;
@@ -23,20 +23,23 @@ export default function DashboardPage() {
 
   const checks = useMemo<Check[]>(() => {
     const hasContact = !!(profile.email || profile.phone || profile.telegram || profile.linkedin || profile.github);
-    const bioEn = stripHtml(profile.bio?.en ?? "").length > 20;
+    const bioText = (l: "en" | "ru" | "uz") => stripHtml(profile.bio?.[l] ?? "").length > 20;
+    const hasBio = stripHtml(pick(profile.bio, "en")).length > 20;
+    // Translation check only matters when the site offers more than one language.
+    const translated = settings.languages.length <= 1 || settings.languages.every(bioText);
     return [
       { key: "name", done: !!profile.name.trim(), href: "/admin/profile" },
-      { key: "titles", done: (profile.titles?.en?.length ?? 0) > 0, href: "/admin/profile" },
-      { key: "tagline", done: !!profile.tagline?.en?.trim(), href: "/admin/profile" },
-      { key: "bio", done: bioEn, href: "/admin/profile" },
+      { key: "titles", done: [profile.titles?.en, profile.titles?.ru, profile.titles?.uz].some((l) => (l?.length ?? 0) > 0), href: "/admin/profile" },
+      { key: "tagline", done: filled(profile.tagline), href: "/admin/profile" },
+      { key: "bio", done: hasBio, href: "/admin/profile" },
       { key: "photo", done: !!profile.photo, href: "/admin/profile" },
       { key: "cv", done: !!profile.cv, href: "/admin/profile" },
       { key: "contact", done: hasContact, href: "/admin/profile" },
       { key: "skills", done: skills.filter((s) => s.published).length >= 5, href: "/admin/skills" },
       { key: "projects", done: projects.filter((p) => p.published).length >= 3, href: "/admin/projects" },
       { key: "education", done: education.some((e) => e.published), href: "/admin/education" },
-      { key: "seo", done: !!settings.seoTitle?.en?.trim() && !!settings.seoDescription?.en?.trim(), href: "/admin/settings" },
-      { key: "translations", done: stripHtml(profile.bio?.ru ?? "").length > 20 && stripHtml(profile.bio?.uz ?? "").length > 20, href: "/admin/profile" },
+      { key: "seo", done: filled(settings.seoTitle) && filled(settings.seoDescription), href: "/admin/settings" },
+      { key: "translations", done: translated, href: "/admin/profile" },
       { key: "experience", done: experience.some((e) => e.published), href: "/admin/experience", optional: true },
       { key: "certificates", done: certificates.some((c) => c.published), href: "/admin/certificates", optional: true },
     ];

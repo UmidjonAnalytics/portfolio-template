@@ -8,7 +8,7 @@ image / file is stored as a **media reference** string. The TypeScript source of
 
 | Concept | Shape | Notes |
 | --- | --- | --- |
-| Localized string | `{ en: string, ru?: string, uz?: string }` | English is required. Missing RU/UZ fall back to EN on the site. |
+| Localized string | `{ en: string, ru?: string, uz?: string }` | At least one language must be filled. A missing language falls back to English, then to any filled one. |
 | Localized list | `{ en: string[], ru?: string[], uz?: string[] }` | Bullets, job titles, spoken languages. |
 | Media reference | `string` | One of: `https://…` (Firebase Storage or any URL), `data:image/svg+xml…` (seed placeholders), `media:<id>` (a document in the `media` collection). |
 | Month | `"YYYY-MM"` | Empty string = "present". |
@@ -51,6 +51,7 @@ so no composite indexes are needed.
 | --- | --- | --- |
 | `siteName` | string | Header brand + browser tab |
 | `accentColor` | `#rrggbb` | Applied as the `--accent` CSS variable |
+| `languages` | `Lang[]` | Languages offered to visitors. Missing means all three. With one, the switcher is hidden |
 | `defaultLang` | `"en" \| "ru" \| "uz"` | Used until the visitor picks a language |
 | `defaultTheme` | `"light" \| "dark" \| "system"` | Used until the visitor toggles the theme |
 | `sections` | `Record<SectionKey, boolean>` | Manual on/off per section (skills, projects, experience, certificates, education, testimonials, blog) |
@@ -158,21 +159,55 @@ update or delete them.
 
 | Field | Type |
 | --- | --- |
-| `dataUrl` | string — compressed image (WebP) or PDF as a data URI |
+| `dataUrl` | string — compressed image (WebP) or file as a data URI; empty when chunked |
+| `chunks` | number, only present when the file is split |
 | `type` | MIME type |
 | `size` | bytes |
 | `name` | original file name |
 | `createdAt` | number |
 
-Documents are limited to 1 MiB by Firestore, so images are compressed to ≤ 650 KB and PDFs must be
-≤ 700 KB in this mode. With Firebase Storage enabled (Blaze plan) files go to Storage instead and the
-reference is a plain download URL.
+Firestore documents hold at most 1 MiB. Files whose data URI is longer than ~950 KB are split into
+`media/{id}/chunks/{0..n-1}` documents with one field `d`, so CVs up to 10 MB fit. Images are
+compressed to at most 650 KB and normally stay in one document. See `src/lib/media-store.ts`. With
+Firebase Storage enabled (Blaze plan) files go to Storage instead and the reference is a download URL.
+
+## Intake form collections
+
+Only used on the owner's own deployment (`NEXT_PUBLIC_INTAKE_ENABLED=true`). See [INTAKE.md](INTAKE.md).
+
+| Collection | Contents | Access |
+| --- | --- | --- |
+| `orderCodes/{code}` | `{ code, label, isStudent, stage, createdAt }`; stage is `new`, `building` or `done` | Anyone may get one code; only the admin can list or write |
+| `intake/{code}` | Every answer of one customer (`IntakeData` in `src/lib/intake/types.ts`); `status` is `draft` or `submitted`; `step` is the furthest step reached | The code holder may get, create and update until submitted; admin everything |
+| `intakeFiles/{id}` | `{ code, name, type, size, chunks, createdAt }` | The code holder may create while the form is open; only the admin can read |
+| `intakeFiles/{id}/chunks/{n}` | `{ d }`, one piece of the file's data URI | Same as above; `n` must be below `chunks` |
+
+## Site package (`.json` export)
+
+The bridge from a submitted form to a customer site, defined in `src/lib/site-package.ts`.
+
+```ts
+{
+  format: "portfolio-site-package",
+  version: 1,
+  createdAt: number,
+  source: { code, fullName, gmail, phone, telegram, domains, isStudent, exampleSite, notes },
+  profile: Profile,
+  settings: Partial<SiteSettings>,      // merged into the site's settings
+  skills, projects, experience, certificates, education, testimonials,
+  files: { [id]: { name, type, dataUrl } }
+}
+```
+
+Content refers to files as `"file:<id>"`. Importing replaces the site's content, writes each file
+as a media document, and swaps every `file:` reference for its `media:` reference.
 
 ## Security rules summary
 
 See [`firestore.rules`](firestore.rules) and [`storage.rules`](storage.rules).
 
-- `site/*`, `media/*`: public read, admin write.
+- `site/*`, `media/*` and media chunks: public read, admin write.
 - Content collections: public read only when `published == true`; admin read/write everything.
 - `messages`: anyone can create (validated shape), admin only for read/update/delete.
+- Intake collections: see the table above.
 - Admin = signed-in user whose email is in the allowlist inside the rules file.

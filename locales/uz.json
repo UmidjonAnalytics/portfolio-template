@@ -74,7 +74,11 @@
     "en": "English",
     "ru": "Русский",
     "uz": "O‘zbekcha",
-    "short": { "en": "EN", "ru": "RU", "uz": "UZ" }
+    "short": {
+      "en": "EN",
+      "ru": "RU",
+      "uz": "UZ"
+    }
   },
   "hero": {
     "greeting": "Salom, men",
@@ -130,7 +134,10 @@
       "impact": "Eng ta’sirli",
       "az": "A – Z"
     },
-    "view": { "grid": "Katakli ko‘rinish", "list": "Ro‘yxat ko‘rinishi" },
+    "view": {
+      "grid": "Katakli ko‘rinish",
+      "list": "Ro‘yxat ko‘rinishi"
+    },
     "filters": {
       "tools": "Vositalar",
       "domains": "Sohalar",
@@ -289,7 +296,8 @@
       "viewSite": "Saytni ochish",
       "signOut": "Chiqish",
       "openSidebar": "Navigatsiyani ochish",
-      "closeSidebar": "Navigatsiyani yopish"
+      "closeSidebar": "Navigatsiyani yopish",
+      "orders": "Buyurtmalar"
     },
     "dashboard": {
       "title": "Boshqaruv paneli",
@@ -363,8 +371,8 @@
       "discardHint": "Formada saqlanmagan o‘zgarishlar bor."
     },
     "form": {
-      "fallbackHint": "Bo‘sh — tashrif buyuruvchilar inglizcha matnni ko‘radi.",
-      "requiredEn": "Inglizcha varianti majburiy.",
+      "fallbackHint": "Bo‘sh — tashrif buyuruvchilar boshqa tildagi matnni ko‘radi.",
+      "requiredEn": "Kamida bitta tilda to‘ldiring.",
       "translationsLabel": "Tarjimalar",
       "generalSection": "Umumiy",
       "contentSection": "Mazmun",
@@ -511,7 +519,19 @@
       "clearConfirmType": "Tasdiqlash uchun DELETE deb yozing",
       "clearing": "O‘chirilmoqda…",
       "cleared": "Barcha ma’lumotlar o‘chirildi",
-      "presets": "Tayyor ranglar"
+      "presets": "Tayyor ranglar",
+      "languages": "Sayt tillari",
+      "languagesHint": "Tashrif buyuruvchilar faqat yoqilgan tillar orasida almashtira oladi. Bitta til bo‘lsa, almashtirish tugmasi yashiriladi.",
+      "languagesLast": "Kamida bitta til yoqilgan qolishi kerak.",
+      "import": "Anketadan import qilish",
+      "importHint": "Yuborilgan anketadan eksport qilingan sayt faylini yuklaydi. Hozirgi kontentning hammasi almashtiriladi, sozlamalar birlashtiriladi.",
+      "importChoose": "Sayt faylini tanlash (.json)",
+      "importing": "Import qilinmoqda…",
+      "imported": "Kontent import qilindi",
+      "importInvalid": "Bu sayt fayli emas.",
+      "importTooLarge": "{name} bepul tarif uchun juda katta, shuning uchun o‘tkazib yuborildi. Uni siqib, «Profil» bo‘limida qayta yuklang.",
+      "importConfirm": "{name} uchun sayt import qilinsinmi?",
+      "importConfirmHint": "Saytdagi barcha loyihalar, ko‘nikmalar, sertifikatlar va xabarlar almashtiriladi. Bu amalni qaytarib bo‘lmaydi."
     },
     "media": {
       "drop": "Faylni shu yerga tashlang",

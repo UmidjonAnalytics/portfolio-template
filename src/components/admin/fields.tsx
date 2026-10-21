@@ -3,7 +3,8 @@
 import { X } from "lucide-react";
 import { createContext, useContext, useId, useState, type ReactNode } from "react";
 import { useLocale } from "@/lib/i18n";
-import { LANGS, type Lang, type Localized, type LocalizedList } from "@/lib/types";
+import { useSiteData } from "@/lib/site-data";
+import { type Lang, type Localized, type LocalizedList } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -13,12 +14,17 @@ import { cn } from "@/lib/utils";
 interface FormLangCtx {
   lang: Lang;
   setLang: (l: Lang) => void;
+  /** The site's enabled languages — the only tabs shown. */
+  langs: Lang[];
 }
 const FormLangContext = createContext<FormLangCtx | null>(null);
 
-export function FormLangProvider({ children, initial = "en" }: { children: ReactNode; initial?: Lang }) {
-  const [lang, setLang] = useState<Lang>(initial);
-  return <FormLangContext.Provider value={{ lang, setLang }}>{children}</FormLangContext.Provider>;
+export function FormLangProvider({ children }: { children: ReactNode }) {
+  const { settings } = useSiteData();
+  const langs = settings.languages;
+  const [chosen, setLang] = useState<Lang>(settings.defaultLang);
+  const lang = langs.includes(chosen) ? chosen : settings.defaultLang;
+  return <FormLangContext.Provider value={{ lang, setLang, langs }}>{children}</FormLangContext.Provider>;
 }
 
 export function useFormLang(): FormLangCtx {
@@ -28,11 +34,12 @@ export function useFormLang(): FormLangCtx {
 }
 
 export function LangTabs({ className }: { className?: string }) {
-  const { lang, setLang } = useFormLang();
+  const { lang, setLang, langs } = useFormLang();
   const { t } = useLocale();
+  if (langs.length <= 1) return null;
   return (
     <div className={cn("inline-flex rounded-full border border-line bg-surface-2 p-0.5", className)} role="tablist" aria-label={t("admin.form.translationsLabel")}>
-      {LANGS.map((l) => (
+      {langs.map((l) => (
         <button
           key={l}
           type="button"
@@ -176,13 +183,25 @@ export function Slider({ value, onChange, min = 0, max = 100, id, label }: { val
 // Localized inputs (follow the form language tabs)
 // ---------------------------------------------------------------------------
 
-function FallbackHint({ value }: { value: Localized | LocalizedList }) {
-  const { lang } = useFormLang();
+function hasText(v: string | string[] | undefined): boolean {
+  return Array.isArray(v) ? v.length > 0 : !!v && !!v.trim();
+}
+
+/** Shown on a tab that is empty while another enabled language has text, so visitors see that one. */
+export function FallbackHint({ value }: { value: Localized | LocalizedList }) {
+  const { lang, langs } = useFormLang();
   const { t } = useLocale();
-  if (lang === "en") return null;
-  const v = value[lang];
-  const empty = Array.isArray(v) ? v.length === 0 : !v || !v.trim();
-  return empty ? <span className="text-[11px] text-muted italic">{t("admin.form.fallbackHint")}</span> : null;
+  if (!value || hasText(value[lang])) return null;
+  const otherFilled = langs.some((l) => l !== lang && hasText(value[l]));
+  return otherFilled ? <span className="text-[11px] text-muted italic">{t("admin.form.fallbackHint")}</span> : null;
+}
+
+/** Language badge next to a localized field; hidden when the site has only one language. */
+export function LangBadge() {
+  const { lang, langs } = useFormLang();
+  const { t } = useLocale();
+  if (langs.length <= 1) return null;
+  return <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold text-muted">{t(`lang.short.${lang}`)}</span>;
 }
 
 export function LocalizedInput({
@@ -207,7 +226,6 @@ export function LocalizedInput({
   error?: string;
 }) {
   const { lang } = useFormLang();
-  const { t } = useLocale();
   const id = useId();
   const current = value?.[lang] ?? "";
   const set = (v: string) => onChange({ ...value, [lang]: v });
@@ -216,12 +234,12 @@ export function LocalizedInput({
       label={label}
       hint={hint}
       error={error}
-      required={required && lang === "en"}
+      required={required}
       htmlFor={id}
       right={
         <span className="flex items-center gap-2">
           <FallbackHint value={value} />
-          <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold text-muted">{t(`lang.short.${lang}`)}</span>
+          <LangBadge />
         </span>
       }
     >
@@ -236,7 +254,6 @@ export function LocalizedInput({
 
 export function LocalizedListInput({ label, value, onChange, hint, rows = 4 }: { label: string; value: LocalizedList; onChange: (v: LocalizedList) => void; hint?: string; rows?: number }) {
   const { lang } = useFormLang();
-  const { t } = useLocale();
   const id = useId();
   const [draft, setDraft] = useState<Record<string, string> | null>(null);
   const list = value?.[lang] ?? [];
@@ -249,7 +266,7 @@ export function LocalizedListInput({ label, value, onChange, hint, rows = 4 }: {
       right={
         <span className="flex items-center gap-2">
           <FallbackHint value={value} />
-          <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold text-muted">{t(`lang.short.${lang}`)}</span>
+          <LangBadge />
         </span>
       }
     >

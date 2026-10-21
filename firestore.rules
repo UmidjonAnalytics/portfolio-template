@@ -42,6 +42,12 @@ service cloud.firestore {
     match /media/{docId} {
       allow read: if true;
       allow write: if isAdmin();
+
+      // Files over ~950 KB are split into chunks (see src/lib/media-store.ts).
+      match /chunks/{n} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
     }
 
     // Content collections: public can only read published items.
@@ -61,6 +67,61 @@ service cloud.firestore {
         && request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 4000
         && request.resource.data.read == false;
       allow read, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------------
+    // Intake form (only used on the owner's own deployment; harmless elsewhere).
+    //
+    // The owner issues an order code after payment. Knowing the code is what lets
+    // a customer open, save and submit their form, so codes are long and random,
+    // and nothing here can be listed except by the admin.
+    // ------------------------------------------------------------------------
+    function codeValid(code) {
+      return exists(/databases/$(database)/documents/orderCodes/$(code));
+    }
+
+    function intakeOpen(code) {
+      return !exists(/databases/$(database)/documents/intake/$(code))
+        || get(/databases/$(database)/documents/intake/$(code)).data.status != 'submitted';
+    }
+
+    match /orderCodes/{code} {
+      allow get: if true;
+      allow list, create, update, delete: if isAdmin();
+    }
+
+    match /intake/{code} {
+      allow get: if isAdmin() || codeValid(code);
+      allow list, delete: if isAdmin();
+      allow create: if codeValid(code)
+        && request.resource.data.code == code
+        && request.resource.data.status in ['draft', 'submitted'];
+      allow update: if isAdmin() || (
+        codeValid(code)
+        && resource.data.status != 'submitted'
+        && request.resource.data.code == code
+        && request.resource.data.status in ['draft', 'submitted']
+      );
+    }
+
+    // Uploaded files: metadata here, data URL split across /chunks. Customers can
+    // only create; reading back is admin-only, so a code cannot be used to fetch files.
+    match /intakeFiles/{fileId} {
+      allow create: if codeValid(request.resource.data.code)
+        && intakeOpen(request.resource.data.code)
+        && request.resource.data.keys().hasOnly(['code', 'name', 'type', 'size', 'chunks', 'createdAt'])
+        && request.resource.data.size is int && request.resource.data.size <= 12582912
+        && request.resource.data.chunks is int && request.resource.data.chunks >= 1 && request.resource.data.chunks <= 20;
+      allow read, update, delete: if isAdmin();
+
+      match /chunks/{n} {
+        allow create: if exists(/databases/$(database)/documents/intakeFiles/$(fileId))
+          && int(n) < get(/databases/$(database)/documents/intakeFiles/$(fileId)).data.chunks
+          && intakeOpen(get(/databases/$(database)/documents/intakeFiles/$(fileId)).data.code)
+          && request.resource.data.keys().hasOnly(['d'])
+          && request.resource.data.d is string && request.resource.data.d.size() <= 950000;
+        allow read, delete: if isAdmin();
+      }
     }
 
     // Everything else is locked.

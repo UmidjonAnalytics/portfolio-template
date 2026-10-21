@@ -5,6 +5,7 @@ import {
   Award,
   BookOpen,
   Briefcase,
+  ClipboardList,
   ExternalLink,
   FolderKanban,
   GraduationCap,
@@ -22,6 +23,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { intakeEnabled } from "@/lib/intake/types";
 import { useBodyScrollLock } from "@/lib/hooks";
 import { useLocale } from "@/lib/i18n";
 import { SiteDataProvider, useSiteData } from "@/lib/site-data";
@@ -29,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/Button";
 import { LangSwitcher, ThemeToggle } from "@/components/ui/Switchers";
 
-const NAV = [
+const BASE_NAV = [
   { href: "/admin", key: "dashboard", Icon: LayoutDashboard },
   { href: "/admin/profile", key: "profile", Icon: UserRound },
   { href: "/admin/skills", key: "skills", Icon: Sparkles },
@@ -41,7 +43,10 @@ const NAV = [
   { href: "/admin/blog", key: "blog", Icon: BookOpen },
   { href: "/admin/messages", key: "messages", Icon: Inbox },
   { href: "/admin/settings", key: "settings", Icon: Settings },
-] as const;
+];
+
+// The intake form and its order list exist only on the owner's own deployment.
+const NAV = intakeEnabled() ? [BASE_NAV[0], { href: "/admin/buyurtmalar", key: "orders", Icon: ClipboardList }, ...BASE_NAV.slice(1)] : BASE_NAV;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();

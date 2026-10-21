@@ -6,7 +6,7 @@ import { Field, Input, LocalizedInput } from "@/components/admin/fields";
 import { ImageField, StorageNotice } from "@/components/admin/MediaField";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, type Certificate } from "@/lib/types";
-import { formatMonth } from "@/lib/utils";
+import { filled, formatMonth } from "@/lib/utils";
 
 function CertificateForm({ value, onChange }: { value: Certificate; onChange: (v: Certificate) => void }) {
   const { t } = useLocale();
@@ -42,7 +42,7 @@ const config: Omit<CrudConfig<Certificate>, "Form"> = {
   getSubtitle: (c) => [c.issuer, c.date ? formatMonth(c.date, "en") : ""].filter(Boolean).join(" · "),
   getThumb: (c) => c.image,
   newItem: () => ({ title: emptyLocalized(), issuer: "", date: "", credentialId: "", verifyUrl: "", image: "" }),
-  validate: (c, t) => (c.title.en.trim() && c.issuer.trim() ? null : t("admin.form.requiredEn")),
+  validate: (c, t) => (filled(c.title) && c.issuer.trim() ? null : t("admin.form.requiredEn")),
 };
 
 export default function CertificatesPage() {

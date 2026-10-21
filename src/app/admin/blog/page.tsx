@@ -7,7 +7,7 @@ import { ImageField } from "@/components/admin/MediaField";
 import { LocalizedRichText } from "@/components/admin/RichTextEditor";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, type BlogPost } from "@/lib/types";
-import { formatDate, slugify } from "@/lib/utils";
+import { filled, formatDate, pick, slugify } from "@/lib/utils";
 
 function BlogForm({ value, onChange }: { value: BlogPost; onChange: (v: BlogPost) => void }) {
   const { t } = useLocale();
@@ -17,7 +17,7 @@ function BlogForm({ value, onChange }: { value: BlogPost; onChange: (v: BlogPost
       <LocalizedInput
         label={t("admin.fields.title")}
         value={value.title}
-        onChange={(title) => set({ title, slug: value.slug || slugify(title.en) })}
+        onChange={(title) => set({ title, slug: value.slug || slugify(pick(title, "en")) })}
         required
       />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -44,8 +44,8 @@ const config: Omit<CrudConfig<BlogPost>, "Form"> = {
   getSubtitle: (p) => [p.date ? formatDate(p.date, "en") : "", `/blog/${p.slug}`].filter(Boolean).join(" · "),
   getThumb: (p) => p.cover,
   newItem: () => ({ title: emptyLocalized(), slug: "", excerpt: emptyLocalized(), content: emptyLocalized(), cover: "", tags: [], date: new Date().toISOString().slice(0, 10) }),
-  validate: (p, t) => (p.title.en.trim() && p.content.en.trim() && p.slug.trim() ? null : t("admin.form.requiredEn")),
-  beforeSave: (p) => ({ ...p, slug: slugify(p.slug) || slugify(p.title.en) }),
+  validate: (p, t) => (filled(p.title) && filled(p.content) && p.slug.trim() ? null : t("admin.form.requiredEn")),
+  beforeSave: (p) => ({ ...p, slug: slugify(p.slug) || slugify(pick(p.title, "en")) }),
 };
 
 export default function BlogPage() {

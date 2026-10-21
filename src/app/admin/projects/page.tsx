@@ -8,7 +8,7 @@ import { FileField, GalleryField, ImageField, StorageNotice } from "@/components
 import { validateChart } from "@/components/public/InteractiveChart";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, PROJECT_DOMAINS, PROJECT_TOOLS, type Project, type ProjectChart, type ProjectMetric } from "@/lib/types";
-import { cn, formatMonth } from "@/lib/utils";
+import { cn, filled, formatMonth } from "@/lib/utils";
 
 const CHART_EXAMPLE: ProjectChart = {
   type: "bar",
@@ -215,8 +215,8 @@ const config: Omit<CrudConfig<Project>, "Form"> = {
     date: new Date().toISOString().slice(0, 7),
     chart: null,
   }),
-  validate: (p, t) => (p.title.en.trim() && p.summary.en.trim() ? null : t("admin.form.requiredEn")),
-  beforeSave: (p) => ({ ...p, chart: p.chart ?? null, metrics: (p.metrics ?? []).filter((m) => m.value.trim() || m.label.en.trim()) }),
+  validate: (p, t) => (filled(p.title) && filled(p.summary) ? null : t("admin.form.requiredEn")),
+  beforeSave: (p) => ({ ...p, chart: p.chart ?? null, metrics: (p.metrics ?? []).filter((m) => m.value.trim() || filled(m.label)) }),
 };
 
 export default function ProjectsPage() {

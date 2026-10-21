@@ -74,7 +74,11 @@
     "en": "English",
     "ru": "Русский",
     "uz": "O‘zbekcha",
-    "short": { "en": "EN", "ru": "RU", "uz": "UZ" }
+    "short": {
+      "en": "EN",
+      "ru": "RU",
+      "uz": "UZ"
+    }
   },
   "hero": {
     "greeting": "Hi, I'm",
@@ -130,7 +134,10 @@
       "impact": "Most impactful",
       "az": "A – Z"
     },
-    "view": { "grid": "Grid view", "list": "List view" },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
+    },
     "filters": {
       "tools": "Tools",
       "domains": "Domains",
@@ -289,7 +296,8 @@
       "viewSite": "View site",
       "signOut": "Sign out",
       "openSidebar": "Open navigation",
-      "closeSidebar": "Close navigation"
+      "closeSidebar": "Close navigation",
+      "orders": "Orders"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -363,8 +371,8 @@
       "discardHint": "You have unsaved changes in this form."
     },
     "form": {
-      "fallbackHint": "Empty — visitors will see the English text.",
-      "requiredEn": "The English version is required.",
+      "fallbackHint": "Empty — visitors see the text from another language.",
+      "requiredEn": "Fill this in in at least one language.",
       "translationsLabel": "Translations",
       "generalSection": "General",
       "contentSection": "Content",
@@ -511,7 +519,19 @@
       "clearConfirmType": "Type DELETE to confirm",
       "clearing": "Clearing…",
       "cleared": "All data cleared",
-      "presets": "Presets"
+      "presets": "Presets",
+      "languages": "Site languages",
+      "languagesHint": "Visitors can only switch between the languages you turn on. With one language the switcher is hidden.",
+      "languagesLast": "At least one language must stay on.",
+      "import": "Import from intake form",
+      "importHint": "Loads a site file exported from a submitted intake form. Replaces all current content; settings are merged.",
+      "importChoose": "Choose site file (.json)",
+      "importing": "Importing…",
+      "imported": "Content imported",
+      "importInvalid": "This is not a valid site file.",
+      "importTooLarge": "{name} is too large to store on the free plan and was skipped. Compress it and upload it again in Profile.",
+      "importConfirm": "Import the site for {name}?",
+      "importConfirmHint": "Every project, skill, certificate and message currently on this site will be replaced. This cannot be undone."
     },
     "media": {
       "drop": "Drop a file here",

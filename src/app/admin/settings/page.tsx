@@ -1,7 +1,7 @@
 "use client";
 
 import { doc, setDoc } from "firebase/firestore";
-import { AlertTriangle, Database, Save, Trash2 } from "lucide-react";
+import { AlertTriangle, Database, FileUp, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/admin/AdminShell";
@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { db } from "@/lib/firebase";
 import { useLocale } from "@/lib/i18n";
 import { clearAll, seedAll } from "@/lib/seed";
+import { importSitePackage, isSitePackage, type SitePackage } from "@/lib/site-package";
 import { useSiteData } from "@/lib/site-data";
 import { useTheme } from "@/lib/theme";
 import { LANGS, SECTION_KEYS, type Lang, type SiteSettings, type Theme } from "@/lib/types";
@@ -30,7 +31,8 @@ export default function SettingsPage() {
   const [confirmSeed, setConfirmSeed] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [clearText, setClearText] = useState("");
-  const [busy, setBusy] = useState<"seed" | "clear" | null>(null);
+  const [busy, setBusy] = useState<"seed" | "clear" | "import" | null>(null);
+  const [pendingImport, setPendingImport] = useState<SitePackage | null>(null);
   const [allowlistText, setAllowlistText] = useState("");
 
   useEffect(() => {
@@ -88,6 +90,33 @@ export default function SettingsPage() {
     try {
       await clearAll(db);
       toast.success(t("admin.settings.cleared"));
+    } catch (e) {
+      console.error(e);
+      toast.error(t("admin.crud.errorToast"));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const pickImport = async (file: File) => {
+    try {
+      const parsed: unknown = JSON.parse(await file.text());
+      if (!isSitePackage(parsed)) throw new Error("invalid");
+      setPendingImport(parsed);
+    } catch {
+      toast.error(t("admin.settings.importInvalid"));
+    }
+  };
+
+  const runImport = async () => {
+    const pkg = pendingImport;
+    if (!pkg) return;
+    setPendingImport(null);
+    setBusy("import");
+    try {
+      const warnings = await importSitePackage(db, pkg);
+      toast.success(t("admin.settings.imported"));
+      for (const w of warnings) toast.warning(t("admin.settings.importTooLarge", { name: w.name }), { duration: 12_000 });
     } catch (e) {
       console.error(e);
       toast.error(t("admin.crud.errorToast"));
@@ -160,9 +189,36 @@ export default function SettingsPage() {
                 <Input id="s-accent" value={draft.accentColor} onChange={(accentColor) => update({ accentColor })} className="w-28 font-mono" maxLength={7} />
               </div>
             </Field>
+            <Field label={t("admin.settings.languages")} hint={t("admin.settings.languagesHint")}>
+              <div className="flex flex-wrap gap-2" role="group" aria-label={t("admin.settings.languages")}>
+                {LANGS.map((l) => {
+                  const on = draft.languages.includes(l);
+                  const last = on && draft.languages.length === 1;
+                  return (
+                    <button
+                      key={l}
+                      type="button"
+                      aria-pressed={on}
+                      disabled={last}
+                      title={last ? t("admin.settings.languagesLast") : undefined}
+                      onClick={() => {
+                        const languages = LANGS.filter((x) => (x === l ? !on : draft.languages.includes(x)));
+                        update({ languages, defaultLang: languages.includes(draft.defaultLang) ? draft.defaultLang : languages[0] });
+                      }}
+                      className={cn(
+                        "h-9 px-4 rounded-full border text-sm font-semibold transition disabled:cursor-not-allowed",
+                        on ? "bg-accent text-accent-fg border-accent" : "border-line text-fg-2 hover:bg-surface-2",
+                      )}
+                    >
+                      {t(`lang.${l}`)}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label={t("admin.settings.defaultLang")} htmlFor="s-lang">
-                <Select<Lang> id="s-lang" value={draft.defaultLang} onChange={(defaultLang) => update({ defaultLang })} options={LANGS.map((l) => ({ value: l, label: t(`lang.${l}`) }))} />
+                <Select<Lang> id="s-lang" value={draft.defaultLang} onChange={(defaultLang) => update({ defaultLang })} options={draft.languages.map((l) => ({ value: l, label: t(`lang.${l}`) }))} />
               </Field>
               <Field label={t("admin.settings.defaultTheme")} htmlFor="s-theme">
                 <Select<Theme>
@@ -237,6 +293,31 @@ export default function SettingsPage() {
                   </Button>
                 </div>
               </div>
+              <div className="rounded-2xl border border-line p-4">
+                <p className="font-semibold flex items-center gap-2">
+                  <FileUp className="h-4 w-4 text-accent-strong" aria-hidden="true" />
+                  {t("admin.settings.import")}
+                </p>
+                <p className="mt-1 text-xs text-muted">{t("admin.settings.importHint")}</p>
+                <label
+                  className={cn(
+                    "mt-3 inline-flex h-9 px-4 items-center gap-2 rounded-full bg-surface-2 border border-line text-sm font-semibold cursor-pointer hover:bg-surface-3 transition",
+                    busy !== null && "pointer-events-none opacity-50",
+                  )}
+                >
+                  {busy === "import" ? t("admin.settings.importing") : t("admin.settings.importChoose")}
+                  <input
+                    type="file"
+                    accept="application/json,.json"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) void pickImport(f);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
             </FormSection>
           </div>
         </div>
@@ -244,6 +325,16 @@ export default function SettingsPage() {
 
       <div className="sticky bottom-4 mt-6 flex justify-end">{saveButton}</div>
 
+      <ConfirmDialog
+        open={!!pendingImport}
+        title={t("admin.settings.importConfirm", { name: String(pendingImport?.source?.fullName ?? pendingImport?.profile?.name ?? "") })}
+        description={t("admin.settings.importConfirmHint")}
+        confirmLabel={t("admin.settings.import")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={runImport}
+        onCancel={() => setPendingImport(null)}
+        danger
+      />
       <ConfirmDialog open={confirmSeed} title={t("admin.settings.seedConfirm")} description={t("admin.settings.seedHint")} confirmLabel={t("admin.settings.seed")} cancelLabel={t("common.cancel")} onConfirm={runSeed} onCancel={() => setConfirmSeed(false)} />
       <ConfirmDialog
         open={confirmClear}

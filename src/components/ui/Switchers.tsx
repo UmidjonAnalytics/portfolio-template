@@ -7,11 +7,13 @@ import { LANGS, type Lang } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/lib/hooks";
 
-export function LangSwitcher({ className, compact }: { className?: string; compact?: boolean }) {
+/** `langs` limits the choice to the site's enabled languages; with one or none it renders nothing. */
+export function LangSwitcher({ className, compact, langs = LANGS }: { className?: string; compact?: boolean; langs?: Lang[] }) {
   const { lang, setLang, t } = useLocale();
+  if (langs.length <= 1) return null;
   return (
     <div className={cn("inline-flex items-center rounded-full border border-line bg-surface p-0.5", className)} role="group" aria-label={t("lang.label")}>
-      {LANGS.map((l: Lang) => (
+      {langs.map((l: Lang) => (
         <button
           key={l}
           type="button"

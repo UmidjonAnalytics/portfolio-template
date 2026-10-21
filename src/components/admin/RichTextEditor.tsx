@@ -8,7 +8,7 @@ import { useEffect, useId } from "react";
 import { useLocale } from "@/lib/i18n";
 import type { Localized } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Field, useFormLang } from "./fields";
+import { FallbackHint, Field, LangBadge, useFormLang } from "./fields";
 
 function ToolbarButton({ onClick, active, label, children, disabled }: { onClick: () => void; active?: boolean; label: string; children: React.ReactNode; disabled?: boolean }) {
   return (
@@ -120,18 +120,17 @@ export function RichTextEditor({ value, onChange, placeholder, id }: { value: st
 
 export function LocalizedRichText({ label, value, onChange, hint, required }: { label: string; value: Localized; onChange: (v: Localized) => void; hint?: string; required?: boolean }) {
   const { lang } = useFormLang();
-  const { t } = useLocale();
   const id = useId();
   return (
     <Field
       label={label}
       hint={hint}
-      required={required && lang === "en"}
+      required={required}
       htmlFor={id}
       right={
         <span className="flex items-center gap-2">
-          {lang !== "en" && !value?.[lang] && <span className="text-[11px] text-muted italic">{t("admin.form.fallbackHint")}</span>}
-          <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold text-muted">{t(`lang.short.${lang}`)}</span>
+          <FallbackHint value={value} />
+          <LangBadge />
         </span>
       }
     >

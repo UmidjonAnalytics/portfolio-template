@@ -5,6 +5,7 @@ import { CrudPage, type CrudConfig } from "@/components/admin/CrudPage";
 import { Field, Input, LocalizedInput, Select, Slider } from "@/components/admin/fields";
 import { useLocale } from "@/lib/i18n";
 import { emptyLocalized, SKILL_CATEGORIES, type Skill, type SkillCategory } from "@/lib/types";
+import { filled } from "@/lib/utils";
 
 function SkillForm({ value, onChange }: { value: Skill; onChange: (v: Skill) => void }) {
   const { t } = useLocale();
@@ -38,7 +39,7 @@ const config: Omit<CrudConfig<Skill>, "Form"> = {
   getTitle: (s, tr) => `${s.icon ? s.icon + " " : ""}${tr(s.name)}`,
   getSubtitle: (s, _tr, t) => `${t(`skills.categories.${s.category}`)} · ${s.level}%`,
   newItem: () => ({ name: emptyLocalized(), icon: "", category: "bi", level: 70 }),
-  validate: (s, t) => (s.name.en.trim() ? null : t("admin.form.requiredEn")),
+  validate: (s, t) => (filled(s.name) ? null : t("admin.form.requiredEn")),
 };
 
 export default function SkillsPage() {

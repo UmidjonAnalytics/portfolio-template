@@ -5,6 +5,7 @@ import {
   writeBatch,
   type Firestore,
 } from "firebase/firestore";
+import { removeMedia } from "../media-store";
 import { COLLECTIONS, defaultProfile, type Profile, type SiteSettings } from "../types";
 import {
   seedBlog,
@@ -19,7 +20,7 @@ import {
   seedTestimonials,
 } from "./data";
 
-const ALL_COLLECTIONS = [...COLLECTIONS, "messages", "media"];
+const ALL_COLLECTIONS = [...COLLECTIONS, "messages"];
 const BATCH_LIMIT = 400;
 
 export type ProgressFn = (message: string) => void;
@@ -50,6 +51,10 @@ async function deleteCollection(db: Firestore, name: string, onProgress?: Progre
  */
 export async function clearAll(db: Firestore, onProgress?: ProgressFn): Promise<void> {
   for (const name of ALL_COLLECTIONS) await deleteCollection(db, name, onProgress);
+  // Media documents may have chunk subcollections, which a plain delete would orphan.
+  const media = await getDocs(collection(db, "media"));
+  for (const m of media.docs) await removeMedia(db, m.id);
+  onProgress?.(`Cleared media (${media.size})`);
   const batch = writeBatch(db);
   const empty: Profile = { ...defaultProfile(), updatedAt: Date.now() };
   batch.set(doc(db, "site", "profile"), empty);
