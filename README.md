@@ -9,7 +9,7 @@ hidden until the first item is published, so an empty portfolio still looks fini
 Storage) · Framer Motion · Recharts · Tiptap · dnd-kit · Vercel.
 
 Companion docs: [DATA-MODEL.md](DATA-MODEL.md) · [STUDENT-GUIDE.md](STUDENT-GUIDE.md) ·
-[DECISIONS.md](DECISIONS.md) · [CHECKLIST.md](CHECKLIST.md) · [HANDOVER.md](HANDOVER.md)
+[DECISIONS.md](DECISIONS.md) · [CHECKLIST.md](CHECKLIST.md) · [HANDOVER.md](HANDOVER.md) · [PRODUCT-PLAN.md](PRODUCT-PLAN.md)
 
 ---
 
