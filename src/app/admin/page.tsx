@@ -2,7 +2,9 @@
 
 import { Award, CheckCircle2, Circle, FolderKanban, Inbox, PieChart, Zap } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { intakeOnly } from "@/lib/intake/types";
 import { PageHeader } from "@/components/admin/AdminShell";
 import { useAuth } from "@/lib/auth";
 import { useLocale } from "@/lib/i18n";
@@ -17,6 +19,15 @@ interface Check {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
+  useEffect(() => {
+    if (intakeOnly()) router.replace("/admin/buyurtmalar");
+  }, [router]);
+  if (intakeOnly()) return null;
+  return <Dashboard />;
+}
+
+function Dashboard() {
   const { t } = useLocale();
   const { user } = useAuth();
   const { profile, settings, skills, projects, experience, certificates, education, messages, ready } = useSiteData();

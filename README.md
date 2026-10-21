@@ -70,7 +70,9 @@ Companion docs: [DATA-MODEL.md](DATA-MODEL.md) · [STUDENT-GUIDE.md](STUDENT-GUI
 | `npm run seed` | Fill Firestore with the demo analyst (needs `SEED_EMAIL` / `SEED_PASSWORD` in `.env.local`) |
 | `npm run seed:clear` | Delete all content (settings are kept) |
 | `npm run emulators` | Firebase Auth + Firestore + Storage emulators (needs Java) |
-| `npm run deploy:rules` | `firebase deploy --only firestore:rules,storage` |
+| `npm run release -- <env file>` | Static build + this site's own Firestore rules + Firebase Hosting deploy, all for the project in that env file. The rules' admin list comes from its `NEXT_PUBLIC_ADMIN_EMAILS` |
+| `npm run release -- <env file> --rules` | Deploy only that site's rules |
+| `npm run deploy:rules` | Deploys `firestore.rules` exactly as committed to the default project. Prefer `release`, which sets the right admins per project |
 
 ## Environment variables
 
@@ -90,6 +92,7 @@ Project settings → Your apps.
 | `NEXT_PUBLIC_SITE_URL` | Public URL, used for Open Graph metadata |
 | `NEXT_PUBLIC_USE_EMULATORS` | `true` only when developing against the local emulators |
 | `NEXT_PUBLIC_INTAKE_ENABLED` | `true` only on your own deployment: turns on the intake form at `/forma` and Admin → Buyurtmalar. See [INTAKE.md](INTAKE.md) |
+| `NEXT_PUBLIC_INTAKE_ONLY` | `true` for a deployment that exists only for orders: `/` forwards to the form and the admin shows only Buyurtmalar |
 | `SEED_EMAIL`, `SEED_PASSWORD` | Admin credentials used **only** by `npm run seed` on your machine |
 
 All `NEXT_PUBLIC_*` values are safe to expose: Firebase web config is public by design and the

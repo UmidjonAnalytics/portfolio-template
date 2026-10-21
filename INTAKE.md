@@ -68,25 +68,35 @@ included, and the form says so. The site's buttons and menus are already in all 
 
 ---
 
-## One-time setup
+## Where it runs
 
-The form must run on **your own** deployment, not on customers' sites. It is switched off by
-default, so every customer site built from this template simply returns 404 at `/forma`.
+The form has its own Firebase project, **`portfolio-anketa`**, separate from every customer:
 
-1. **A Firebase project for orders.** Your own, separate from every customer's. Firestore and
-   Email/Password sign-in, exactly like a customer site. Put your email in `adminEmails()` in
-   `firestore.rules` and deploy the rules (`npm run deploy:rules`).
-2. **A deployment of this repo** pointing at that project, with these extra variables:
+- Form: <https://portfolio-anketa.web.app/forma> (the bare address forwards there)
+- Admin: <https://portfolio-anketa.web.app/admin> → **Buyurtmalar**
+- Config: `.env.orders` on your computer (git-ignored), with `NEXT_PUBLIC_INTAKE_ONLY=true`, so the
+  site shows only the form and the admin shows only Buyurtmalar.
 
-   ```
-   NEXT_PUBLIC_INTAKE_ENABLED=true
-   NEXT_PUBLIC_ADMIN_EMAILS=you@gmail.com
-   ```
+To publish a change to the form:
 
-   The rest of the site on that deployment is an ordinary portfolio, so it can be your own.
-3. Sign in at `/admin`. **Buyurtmalar** appears in the menu.
+```bash
+npm run release -- .env.orders
+```
 
-Customer sites must have the current rules deployed too, so they can store large CVs (see below).
+That builds the site, generates this project's own security rules from `NEXT_PUBLIC_ADMIN_EMAILS`
+in `.env.orders`, and deploys both. Only the emails in that file can see orders; customer admins
+listed in other projects are never written into these rules.
+
+The form is switched off by default, so every customer site built from this template returns 404
+at `/forma`.
+
+### Setting it up again from scratch
+
+1. Create a Firebase project with Firestore, and enable Authentication → Email/Password.
+2. Copy `.env.example` to a new env file, fill in the project's web config, and set
+   `NEXT_PUBLIC_ADMIN_EMAILS` to your email, `NEXT_PUBLIC_INTAKE_ENABLED=true` and
+   `NEXT_PUBLIC_INTAKE_ONLY=true`.
+3. `npm run release -- <that env file>`, then create your admin user in the Firebase console.
 
 ---
 

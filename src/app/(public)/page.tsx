@@ -11,6 +11,9 @@ import { Projects } from "@/components/public/Projects";
 import { Skills } from "@/components/public/Skills";
 import { Testimonials } from "@/components/public/Testimonials";
 import { SectionSkeleton } from "@/components/ui/Skeleton";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { intakeOnly } from "@/lib/intake/types";
 import { useSiteData } from "@/lib/site-data";
 import type { SectionKey } from "@/lib/types";
 
@@ -25,6 +28,15 @@ const SECTIONS: { key: SectionKey; Component: () => React.ReactElement | null; c
 ];
 
 export default function HomePage() {
+  const router = useRouter();
+  useEffect(() => {
+    if (intakeOnly()) router.replace("/forma");
+  }, [router]);
+  if (intakeOnly()) return null;
+  return <Home />;
+}
+
+function Home() {
   const { visibleSections, loading, settings } = useSiteData();
 
   return (

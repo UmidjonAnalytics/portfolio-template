@@ -210,7 +210,12 @@ export function mergeIntake(code: string, data: Partial<IntakeData> | undefined 
 }
 
 export function intakeEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_INTAKE_ENABLED === "true";
+  return process.env.NEXT_PUBLIC_INTAKE_ENABLED === "true" || intakeOnly();
+}
+
+/** A deployment that exists only for orders: no public portfolio, admin shows only Buyurtmalar. */
+export function intakeOnly(): boolean {
+  return process.env.NEXT_PUBLIC_INTAKE_ONLY === "true";
 }
 
 /** Unambiguous alphabet: no 0/O, 1/I/L. 31^8 ≈ 8.5e11 possible codes. */

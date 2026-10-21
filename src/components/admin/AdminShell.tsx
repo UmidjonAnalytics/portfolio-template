@@ -23,7 +23,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { intakeEnabled } from "@/lib/intake/types";
+import { intakeEnabled, intakeOnly } from "@/lib/intake/types";
 import { useBodyScrollLock } from "@/lib/hooks";
 import { useLocale } from "@/lib/i18n";
 import { SiteDataProvider, useSiteData } from "@/lib/site-data";
@@ -46,7 +46,8 @@ const BASE_NAV = [
 ];
 
 // The intake form and its order list exist only on the owner's own deployment.
-const NAV = intakeEnabled() ? [BASE_NAV[0], { href: "/admin/buyurtmalar", key: "orders", Icon: ClipboardList }, ...BASE_NAV.slice(1)] : BASE_NAV;
+const ORDERS = { href: "/admin/buyurtmalar", key: "orders", Icon: ClipboardList };
+const NAV = intakeOnly() ? [ORDERS] : intakeEnabled() ? [BASE_NAV[0], ORDERS, ...BASE_NAV.slice(1)] : BASE_NAV;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();

@@ -125,3 +125,19 @@ Judgment calls made while building, and why. Read this before changing the archi
   exported, imported into a site, and the public site checked. 24 rule checks were run as an
   anonymous visitor and as the admin. Testing caught one bug before release: a PDF has no preview,
   and that empty field made Firestore reject every later autosave. It is fixed.
+
+## Orders deployment (added 2026-10-22)
+
+- **A separate Firebase project, `portfolio-anketa`,** holds every order, so no customer project
+  ever contains another customer's data.
+- **Hosted on Firebase Hosting, not Vercel.** The app has no server code, so it now builds as a
+  static export (`STATIC_EXPORT=true`). That keeps the whole orders system in one Google account,
+  and the Vercel CLI on this machine was not logged in. The only dynamic page, `/blog/[slug]`, is
+  prerendered once for a placeholder slug and reads the real slug from the address bar; Hosting
+  routes every `/blog/…` address to it. Normal builds for Vercel are unchanged.
+- **Rules are generated per project.** `firestore.rules` used to carry one hard-coded admin list
+  for every site, which would have let a customer's admin read the orders project. `npm run
+  release` now writes the list from the env file's `NEXT_PUBLIC_ADMIN_EMAILS`, so the site's own
+  allowlist and its rules always match.
+- **Orders-only mode** (`NEXT_PUBLIC_INTAKE_ONLY=true`) forwards `/` to the form and reduces the
+  admin menu to Buyurtmalar, so customers never land on an empty portfolio.

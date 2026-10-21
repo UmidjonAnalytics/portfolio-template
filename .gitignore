@@ -48,3 +48,7 @@ firestore-debug.log
 ui-debug.log
 storage-debug.log
 emulator-data/
+
+# release script output
+.release/
+firebase.release.json

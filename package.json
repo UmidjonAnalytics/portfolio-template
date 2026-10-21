@@ -11,7 +11,8 @@
     "seed": "tsx scripts/seed.ts",
     "seed:clear": "tsx scripts/seed.ts --clear",
     "emulators": "firebase emulators:start --project demo-portfolio --import=./emulator-data --export-on-exit",
-    "deploy:rules": "firebase deploy --only firestore:rules,storage"
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
