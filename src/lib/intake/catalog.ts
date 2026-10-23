@@ -1,4 +1,5 @@
 import type { Localized, SkillCategory } from "../types";
+import type { StyleKey } from "@/lib/design";
 
 export interface CatalogSkill {
   key: string;
@@ -86,3 +87,13 @@ export const ACCENT_PRESETS = [
 ];
 
 export const LANG_LABELS = { uz: "O‘zbekcha", ru: "Ruscha", en: "Inglizcha" } as const;
+
+/** Site styles as the customer sees them. Keys match lib/design.ts STYLE_KEYS. */
+export const STYLE_LABELS: Record<StyleKey, { name: string; description: string }> = {
+  classic: { name: "Klassik", description: "Yumshoq ranglar, yumaloq kartalar." },
+  mono: { name: "Oq-qora", description: "Faqat oq va qora, jiddiy va nafis." },
+  excel: { name: "Excel", description: "Jadval katakchalari, yashil rang." },
+  sql: { name: "SQL", description: "Dasturchi muharriri ko‘rinishi." },
+  powerbi: { name: "Power BI", description: "Hisobot sahifasi, oq plitkalar." },
+  notebook: { name: "Notebook", description: "Python/Jupyter daftari uslubi." },
+};

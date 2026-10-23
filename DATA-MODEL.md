@@ -59,6 +59,29 @@ so no composite indexes are needed.
 | `favicon` | Media ref | Optional |
 | `gaId` | string | Optional Google Analytics measurement id (`G-…`) |
 | `embedAllowlist` | string[] | Hostnames allowed inside the project iframe |
+| `design` | object | Style, background, motion and per-section layouts, below. Missing or unknown values fall back to the defaults (`normalizeDesign` in `src/lib/design.ts`) |
+
+### `site/settings.design`
+
+| Field | Values (first is the default) | Effect |
+| --- | --- | --- |
+| `style` | `classic`, `mono`, `excel`, `sql`, `powerbi`, `notebook` | Whole-site look: colours, fonts, corners, shadows. `mono` ignores the accent colour |
+| `background` | `auto`, `plain`, `grid`, `dots`, `lines`, `glow` | Page background; `auto` uses the style's own |
+| `motion` | `smooth`, `fade`, `slide`, `zoom`, `none` | How blocks appear on scroll. Visitors with reduced motion always get `none` |
+| `speed` | `normal`, `slow`, `fast` | Animation duration ×1, ×1.6, ×0.55 |
+| `density` | `normal`, `compact`, `spacious` | Space between sections |
+| `layouts.hero` | `split`, `centered`, `minimal` | |
+| `layouts.skills` | `cards`, `rings`, `chips`, `table` | |
+| `layouts.projects` | `grid`, `compact`, `stacked`, `carousel`, `swipe` | Filters and search work in every layout; the visitor's grid/list toggle only in `grid` |
+| `layouts.experience` | `timeline`, `cards`, `zigzag` | |
+| `layouts.certificates` | `grid`, `slider`, `list` | |
+| `layouts.education` | `cards`, `timeline`, `list` | |
+| `layouts.testimonials` | `carousel`, `grid`, `wall` | |
+| `layouts.blog` | `grid`, `list`, `featured` | |
+| `order` | `SectionKey[]` | Order of the sections between About and Contact, also used by the menu |
+
+The public site puts `data-style`, `data-bg` and `data-density` on `<html>`; the CSS for each is at
+the end of `src/app/globals.css`. Admin pages never get them.
 
 ## `skills/{id}`
 

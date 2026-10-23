@@ -242,7 +242,8 @@ Vercel and without handling anyone's password.
 one-command setup script that takes a Firebase project id and produces a deployed site. This is the
 phase that decides how many customers you can serve.
 
-**Phase 3 — make it worth paying for.** Theme presets, then per-section layout variants, then the
+**Phase 3 — make it worth paying for.** *(Built 2026-10-23: six styles, 3–5 layouts per block,
+transitions, spacing, block order and a live preview in Admin → Design. See DATA-MODEL.md.)* Theme presets, then per-section layout variants, then the
 advanced controls and the live preview.
 
 **Phase 4 — polish.** More layout variants, more skill presets, a gallery of finished examples to

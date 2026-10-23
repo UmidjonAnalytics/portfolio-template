@@ -2,6 +2,7 @@
 
 import { Award, ExternalLink, ZoomIn } from "lucide-react";
 import { useState } from "react";
+import { useLayout } from "@/lib/design-context";
 import { useLocale } from "@/lib/i18n";
 import { useSiteData } from "@/lib/site-data";
 import type { Certificate } from "@/lib/types";
@@ -11,12 +12,13 @@ import { Modal } from "@/components/ui/Modal";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { SwipeRow } from "@/components/ui/SwipeRow";
 
 function CertificateCard({ item, onOpen, index }: { item: Certificate; onOpen: () => void; index: number }) {
   const { t, tr, lang } = useLocale();
   const title = tr(item.title);
   return (
-    <Reveal delay={index * 0.05} className="card overflow-hidden flex flex-col group">
+    <Reveal delay={index * 0.05} className="card overflow-hidden flex flex-col group h-full">
       <button
         type="button"
         onClick={onOpen}
@@ -70,21 +72,89 @@ function CertificateCard({ item, onOpen, index }: { item: Certificate; onOpen: (
   );
 }
 
+/** Compact row: thumbnail, title, issuer and the verify link. */
+function CertificateRow({ item, onOpen }: { item: Certificate; onOpen: () => void }) {
+  const { t, tr, lang } = useLocale();
+  const title = tr(item.title);
+  return (
+    <div className="p-4 sm:p-5 flex items-center gap-4">
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={t("certificates.viewFull", { title })}
+        className="relative h-16 w-20 sm:h-20 sm:w-28 shrink-0 rounded-lg overflow-hidden bg-surface-2 border border-line"
+      >
+        <SmartImage
+          src={item.image}
+          alt=""
+          fill
+          sizes="112px"
+          className="object-cover"
+          fallback={
+            <span className="absolute inset-0 flex items-center justify-center text-accent-strong/60">
+              <Award className="h-7 w-7" aria-hidden="true" />
+            </span>
+          }
+        />
+      </button>
+      <div className="min-w-0 flex-1">
+        <h3 className="font-semibold leading-snug">{title}</h3>
+        <p className="mt-0.5 text-sm text-muted">
+          {item.issuer}
+          {item.date && (
+            <>
+              {" · "}
+              <time dateTime={item.date}>{formatMonth(item.date, lang)}</time>
+            </>
+          )}
+        </p>
+        {item.credentialId && <p className="mt-1 text-xs text-muted font-mono truncate">{item.credentialId}</p>}
+      </div>
+      {item.verifyUrl && isSafeHttpUrl(item.verifyUrl) && (
+        <Button href={item.verifyUrl} external variant="outline" size="sm" className="shrink-0">
+          <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">{t("certificates.verify")}</span>
+          <span className="sr-only sm:hidden">{t("certificates.verify")}</span>
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export function Certificates() {
   const { certificates } = useSiteData();
   const { t, tr, lang } = useLocale();
+  const layout = useLayout("certificates");
   const [active, setActive] = useState<Certificate | null>(null);
   if (certificates.length === 0) return null;
 
   return (
     <Section id="certificates" eyebrow={t("nav.certificates")} title={t("certificates.title")} subtitle={t("certificates.subtitle")}>
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {certificates.map((c, i) => (
-          <li key={c.id}>
-            <CertificateCard item={c} index={i} onOpen={() => setActive(c)} />
-          </li>
-        ))}
-      </ul>
+      {layout === "slider" ? (
+        <SwipeRow label={t("certificates.title")} itemClassName="w-[80%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.84rem)]">
+          {certificates.map((c, i) => (
+            <CertificateCard key={c.id} item={c} index={i} onOpen={() => setActive(c)} />
+          ))}
+        </SwipeRow>
+      ) : layout === "list" ? (
+        <Reveal>
+          <ul className="card divide-y divide-line">
+            {certificates.map((c) => (
+              <li key={c.id}>
+                <CertificateRow item={c} onOpen={() => setActive(c)} />
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      ) : (
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {certificates.map((c, i) => (
+            <li key={c.id}>
+              <CertificateCard item={c} index={i} onOpen={() => setActive(c)} />
+            </li>
+          ))}
+        </ul>
+      )}
 
       <Modal open={!!active} onClose={() => setActive(null)} size="xl" labelledBy="cert-title">
         {active && (

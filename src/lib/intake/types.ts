@@ -9,6 +9,7 @@
 // ---------------------------------------------------------------------------
 
 import type { Availability, Lang, SkillCategory, Theme } from "../types";
+import type { StyleKey } from "@/lib/design";
 
 /** Order code issued by the owner after payment. Document id = the code itself. */
 export interface OrderCode {
@@ -150,6 +151,8 @@ export interface IntakeData {
   showPhone: boolean;
   linkedin: string;
   github: string;
+  /** Site style (lib/design.ts). */
+  siteStyle: StyleKey;
   accentColor: string;
   defaultTheme: Exclude<Theme, "system">;
   exampleSite: string;
@@ -195,6 +198,7 @@ export function emptyIntake(code: string): IntakeData {
     showPhone: true,
     linkedin: "",
     github: "",
+    siteStyle: "classic",
     accentColor: "#0f8b8d",
     defaultTheme: "dark",
     exampleSite: "",

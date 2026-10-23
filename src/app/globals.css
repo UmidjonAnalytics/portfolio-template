@@ -334,3 +334,343 @@ body {
 .recharts-tooltip-label {
   color: var(--muted) !important;
 }
+
+/* ========================================================================
+   Site design (Admin → Design). Attributes on <html>, set only on the public site:
+     data-style    a complete look: colours, fonts, corners, shadows, decorations
+     data-bg       page background pattern
+     data-density  vertical space between sections
+   Light colours sit under :not(.dark) so they never override the dark set.
+   ======================================================================== */
+
+:root {
+  --section-py: 5rem;
+  --pattern: color-mix(in oklab, var(--fg) 7%, transparent);
+  --cell-w: 32px;
+  --cell-h: 32px;
+}
+@media (min-width: 640px) {
+  :root {
+    --section-py: 7rem;
+  }
+}
+:root[data-density="compact"] {
+  --section-py: 3.25rem;
+}
+:root[data-density="spacious"] {
+  --section-py: 6.5rem;
+}
+@media (min-width: 640px) {
+  :root[data-density="compact"] {
+    --section-py: 4.5rem;
+  }
+  :root[data-density="spacious"] {
+    --section-py: 9.5rem;
+  }
+}
+
+/* Backgrounds */
+:root[data-bg="grid"] body {
+  background-image:
+    linear-gradient(var(--pattern) 1px, transparent 1px),
+    linear-gradient(90deg, var(--pattern) 1px, transparent 1px);
+  background-size: var(--cell-w) var(--cell-h);
+}
+:root[data-bg="dots"] body {
+  background-image: radial-gradient(var(--pattern) 1.3px, transparent 1.7px);
+  background-size: 20px 20px;
+}
+:root[data-bg="lines"] body {
+  background-image: linear-gradient(transparent calc(100% - 1px), var(--pattern) 0);
+  background-size: 100% 30px;
+}
+:root[data-bg="glow"] body {
+  background-image:
+    radial-gradient(55% 40% at 8% 0%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%),
+    radial-gradient(45% 35% at 100% 35%, color-mix(in oklab, var(--accent) 12%, transparent), transparent 70%),
+    radial-gradient(50% 45% at 25% 100%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 70%);
+  background-attachment: fixed;
+}
+
+/* --- Classic B/W: black and white, serif headings, square corners ------ */
+:root[data-style="mono"] {
+  --font-display: Georgia, "Times New Roman", "Noto Serif", serif;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --shadow-sm: none;
+  --shadow-md: 0 0 0 1px var(--fg);
+  --shadow-lg: 0 0 0 1px var(--fg);
+}
+:root[data-style="mono"]:not(.dark) {
+  --accent: #0a0a0a !important;
+  --accent-fg: #ffffff !important;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f3f3f3;
+  --surface-3: #e8e8e8;
+  --fg: #0a0a0a;
+  --fg-2: #262626;
+  --muted: #595959;
+  --line: #dcdcdc;
+  --line-strong: #0a0a0a;
+  --chart-2: #6b6b6b;
+  --chart-3: #a3a3a3;
+  --chart-4: #3d3d3d;
+  --chart-5: #c7c7c7;
+}
+:root.dark[data-style="mono"] {
+  --accent: #f5f5f5 !important;
+  --accent-fg: #0a0a0a !important;
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-2: #141414;
+  --surface-3: #1f1f1f;
+  --fg: #fafafa;
+  --fg-2: #d9d9d9;
+  --muted: #a3a3a3;
+  --line: #2b2b2b;
+  --line-strong: #fafafa;
+  --chart-2: #a3a3a3;
+  --chart-3: #6b6b6b;
+  --chart-4: #d4d4d4;
+  --chart-5: #525252;
+}
+:root[data-style="mono"] .rounded-full {
+  border-radius: 0;
+}
+:root[data-style="mono"] .section-eyebrow {
+  letter-spacing: 0.3em;
+  color: var(--fg);
+}
+:root[data-style="mono"] .section-title {
+  font-weight: 400;
+  font-style: italic;
+}
+:root[data-style="mono"] .section-head {
+  border-bottom: 1px solid var(--fg);
+  padding-bottom: 1.5rem;
+}
+
+/* --- Excel: white sheet, cell grid, green accent, office fonts --------- */
+:root[data-style="excel"] {
+  --font-display: "Segoe UI", Calibri, Carlito, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Segoe UI", Calibri, Carlito, "Helvetica Neue", Arial, sans-serif;
+  --radius: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+  --cell-w: 88px;
+  --cell-h: 24px;
+  --shadow-sm: none;
+  --shadow-md: 0 2px 8px rgb(0 0 0 / 0.14);
+  --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.18);
+}
+:root[data-style="excel"]:not(.dark) {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f3f3f3;
+  --surface-3: #e6e6e6;
+  --fg: #1f1f1f;
+  --fg-2: #3b3b3b;
+  --muted: #5f5f5f;
+  --line: #d4d4d4;
+  --line-strong: #a6a6a6;
+  --pattern: #e6e6e6;
+}
+:root.dark[data-style="excel"] {
+  --bg: #1e1e1e;
+  --surface: #252526;
+  --surface-2: #2d2d2d;
+  --surface-3: #383838;
+  --fg: #f0f0f0;
+  --fg-2: #cfcfcf;
+  --muted: #a0a0a0;
+  --line: #3c3c3c;
+  --line-strong: #5a5a5a;
+  --pattern: #2b2b2b;
+}
+:root[data-style="excel"] .rounded-full {
+  border-radius: 3px;
+}
+:root[data-style="excel"] .section-eyebrow {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: 3px solid var(--accent);
+  letter-spacing: 0.08em;
+}
+:root[data-style="excel"] .glow-accent {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* --- SQL: code editor, monospace headings, dotted background ----------- */
+:root[data-style="sql"] {
+  --font-display: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+  --radius: 6px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
+  --radius-3xl: 10px;
+}
+:root[data-style="sql"]:not(.dark) {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --surface-3: #e6e9ef;
+  --fg: #111827;
+  --fg-2: #374151;
+  --muted: #5b6472;
+  --line: #e1e4ea;
+  --line-strong: #c5cad3;
+  --pattern: #d9dde4;
+}
+:root.dark[data-style="sql"] {
+  --bg: #0b0f14;
+  --surface: #11161d;
+  --surface-2: #161c25;
+  --surface-3: #1d2430;
+  --fg: #e6edf3;
+  --fg-2: #c4ccd4;
+  --muted: #8b949e;
+  --line: #222a35;
+  --line-strong: #303a48;
+  --pattern: #1f2732;
+}
+:root[data-style="sql"] .rounded-full {
+  border-radius: 6px;
+}
+:root[data-style="sql"] .section-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.85rem;
+}
+:root[data-style="sql"] .section-eyebrow::before {
+  content: "-- ";
+  color: var(--muted);
+}
+:root[data-style="sql"] .section-title {
+  letter-spacing: -0.02em;
+}
+
+/* --- Power BI: report canvas, white tiles, soft Fluent shadows --------- */
+:root[data-style="powerbi"] {
+  --font-display: "Segoe UI", "Segoe UI Variable", system-ui, sans-serif;
+  --font-sans: "Segoe UI", "Segoe UI Variable", system-ui, sans-serif;
+  --radius: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 6px;
+  --radius-3xl: 8px;
+  --shadow-sm: 0 1.6px 3.6px rgb(0 0 0 / 0.11), 0 0.3px 0.9px rgb(0 0 0 / 0.09);
+  --shadow-md: 0 6.4px 14.4px rgb(0 0 0 / 0.13), 0 1.2px 3.6px rgb(0 0 0 / 0.11);
+  --shadow-lg: 0 25.6px 57.6px rgb(0 0 0 / 0.22), 0 4.8px 14.4px rgb(0 0 0 / 0.18);
+}
+:root[data-style="powerbi"]:not(.dark) {
+  --bg: #f3f2f1;
+  --surface: #ffffff;
+  --surface-2: #faf9f8;
+  --surface-3: #edebe9;
+  --fg: #252423;
+  --fg-2: #3b3a39;
+  --muted: #605e5c;
+  --line: #e1dfdd;
+  --line-strong: #c8c6c4;
+  --chart-2: #12239e;
+  --chart-3: #e66c37;
+  --chart-4: #6b007b;
+  --chart-5: #e044a7;
+}
+:root.dark[data-style="powerbi"] {
+  --bg: #1b1a19;
+  --surface: #252423;
+  --surface-2: #2d2c2b;
+  --surface-3: #3b3a39;
+  --fg: #f3f2f1;
+  --fg-2: #d2d0ce;
+  --muted: #a19f9d;
+  --line: #3b3a39;
+  --line-strong: #484644;
+}
+:root[data-style="powerbi"] .rounded-full {
+  border-radius: 4px;
+}
+:root[data-style="powerbi"] .section-eyebrow {
+  border-left: 4px solid var(--accent);
+  padding-left: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+:root[data-style="powerbi"] .section-title {
+  font-weight: 600;
+}
+
+/* --- Notebook: Jupyter-style paper, ruled lines, "In [n]:" cells ------- */
+:root[data-style="notebook"] {
+  --font-display: var(--font-sans), "Manrope", system-ui, sans-serif;
+  --radius: 8px;
+  --radius-2xl: 10px;
+  --radius-3xl: 12px;
+}
+:root[data-style="notebook"]:not(.dark) {
+  --bg: #fffdf7;
+  --surface: #ffffff;
+  --surface-2: #f7f4ec;
+  --surface-3: #eeeae0;
+  --fg: #1d1d1b;
+  --fg-2: #3a3a36;
+  --muted: #66645d;
+  --line: #e8e4d8;
+  --line-strong: #d3cdbd;
+  --pattern: #efe9da;
+}
+:root.dark[data-style="notebook"] {
+  --bg: #16161a;
+  --surface: #1e1e23;
+  --surface-2: #24242a;
+  --surface-3: #2d2d34;
+  --fg: #ececec;
+  --fg-2: #cbcbcb;
+  --muted: #9a9aa2;
+  --line: #2c2c33;
+  --line-strong: #3d3d46;
+  --pattern: #202026;
+}
+:root[data-style="notebook"] body {
+  counter-reset: cell;
+}
+:root[data-style="notebook"] .section-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+:root[data-style="notebook"] .section-eyebrow::before {
+  counter-increment: cell;
+  content: "In [" counter(cell) "]: ";
+  color: var(--muted);
+}
+:root[data-style="notebook"] .section-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* The hero's accent mesh and grain belong to Classic; flat styles drop them. */
+:root:is([data-style="mono"], [data-style="excel"]) .mesh {
+  background-image: none;
+}
+:root:is([data-style="mono"], [data-style="excel"], [data-style="powerbi"]) .grain::after {
+  display: none;
+}
+
+/* Horizontal swipe rows: hide the scrollbar, keep touch and keyboard scrolling. */
+.swipe-row {
+  scrollbar-width: none;
+}
+.swipe-row::-webkit-scrollbar {
+  display: none;
+}

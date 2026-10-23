@@ -19,6 +19,8 @@ import { deleteIntakeFile, downloadIntakeFile, formatSize, triggerDownload } fro
 import { buildSitePackage } from "@/lib/intake/to-package";
 import { generateCode, INTAKE_STEPS, intakeEnabled, mergeIntake, type IntakeData, type IntakeFileRef, type OrderCode } from "@/lib/intake/types";
 import { cn, formatDateTime } from "@/lib/utils";
+import { styleMeta } from "@/lib/design";
+import { STYLE_LABELS } from "@/lib/intake/catalog";
 
 type Row = OrderCode & { id: string; intake: IntakeData | null };
 
@@ -223,6 +225,7 @@ function Details({ d }: { d: IntakeData }) {
             </span>
           }
         />
+        <KV k="Uslub" v={STYLE_LABELS[styleMeta(d.siteStyle).key].name} />
         <KV k="Rejim" v={d.defaultTheme === "dark" ? "Qorong‘i" : "Yorug‘"} />
         <KV k="Namuna sayt" v={d.exampleSite} />
         <KV k="Istaklar" v={d.notes} />

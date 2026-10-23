@@ -42,7 +42,8 @@
     "more": "Ko‘proq",
     "less": "Kamroq",
     "on": "Yoqilgan",
-    "off": "O‘chirilgan"
+    "off": "O‘chirilgan",
+    "goToSlide": "{index}-slaydga o‘tish"
   },
   "nav": {
     "home": "Bosh sahifa",
@@ -121,7 +122,11 @@
       "soft": "Shaxsiy ko‘nikmalar"
     },
     "proficiency": "Bilim darajasi",
-    "levelOf": "{name}: {level}% daraja"
+    "levelOf": "{name}: {level}% daraja",
+    "table": {
+      "skill": "Ko‘nikma",
+      "category": "Turkum"
+    }
   },
   "projects": {
     "title": "Loyihalar",
@@ -297,7 +302,8 @@
       "signOut": "Chiqish",
       "openSidebar": "Navigatsiyani ochish",
       "closeSidebar": "Navigatsiyani yopish",
-      "orders": "Buyurtmalar"
+      "orders": "Buyurtmalar",
+      "design": "Dizayn"
     },
     "dashboard": {
       "title": "Boshqaruv paneli",
@@ -562,6 +568,128 @@
       "quote": "Iqtibos",
       "undo": "Bekor qilish",
       "redo": "Qaytarish"
+    },
+    "design": {
+      "title": "Dizayn",
+      "subtitle": "Uslub, ko‘rinishlar va animatsiyalar. Oldindan ko‘rish darhol o‘zgaradi, tashrifchilar saqlagandan keyin ko‘radi.",
+      "style": "Uslub",
+      "styleHint": "Butun sayt ko‘rinishi: ranglar, shriftlar, burchaklar va fon.",
+      "accent": "Asosiy rang",
+      "accentLocked": "Bu uslub faqat oq-qora, shuning uchun asosiy rang ishlatilmaydi.",
+      "background": "Fon",
+      "motion": "Animatsiyalar",
+      "motionHint": "Sahifa aylantirilganda bloklar qanday paydo bo‘lishi.",
+      "speed": "Tezlik",
+      "density": "Bloklar orasidagi masofa",
+      "sections": "Bloklar",
+      "sectionsHint": "Har bir blok ko‘rinishini tanlang. Strelkalar bilan sahifadagi tartibini o‘zgartiring.",
+      "hero": "Sahifa boshi",
+      "hidden": "yashirin: hali yozuv yo‘q yoki o‘chirilgan",
+      "moveUp": "Yuqoriga",
+      "moveDown": "Pastga",
+      "preview": "Oldindan ko‘rish",
+      "desktop": "Kompyuter",
+      "mobile": "Telefon",
+      "replay": "Qayta yuklash va animatsiyalarni takrorlash",
+      "openSite": "Saytni ochish",
+      "reset": "Asl holiga",
+      "emptyHint": "Saytda hali ma’lumot yo‘q, shuning uchun oldindan ko‘rish deyarli bo‘sh. Profil va bir nechta loyiha qo‘shing yoki Sozlamalarda demo ma’lumotlarni yuklang.",
+      "styles": {
+        "classic": {
+          "name": "Klassik",
+          "desc": "Yumshoq ranglar, yumaloq kartalar, nurli urg‘u."
+        },
+        "mono": {
+          "name": "Oq-qora",
+          "desc": "Faqat oq va qora, serifli sarlavhalar, o‘tkir burchaklar."
+        },
+        "excel": {
+          "name": "Excel",
+          "desc": "Jadval katakchalari, ofis shrifti, yashil rang."
+        },
+        "sql": {
+          "name": "SQL",
+          "desc": "Kod muharriri ko‘rinishi, monospace sarlavhalar."
+        },
+        "powerbi": {
+          "name": "Power BI",
+          "desc": "Hisobot sahifasi: oq plitkalar va soyalar."
+        },
+        "notebook": {
+          "name": "Notebook",
+          "desc": "Jupyter uslubidagi qog‘oz, raqamlangan kataklar."
+        }
+      },
+      "backgrounds": {
+        "auto": "Uslubdagidek",
+        "plain": "Oddiy",
+        "grid": "Katak",
+        "dots": "Nuqtalar",
+        "lines": "Chiziqlar",
+        "glow": "Nur"
+      },
+      "motions": {
+        "smooth": "Ko‘tarilish",
+        "fade": "Asta paydo bo‘lish",
+        "slide": "Chetdan kirish",
+        "zoom": "Kattalashish",
+        "none": "Animatsiyasiz"
+      },
+      "speeds": {
+        "slow": "Sekin",
+        "normal": "O‘rtacha",
+        "fast": "Tez"
+      },
+      "densities": {
+        "compact": "Zich",
+        "normal": "O‘rtacha",
+        "spacious": "Keng"
+      },
+      "layouts": {
+        "hero": {
+          "split": "Matn va rasm",
+          "centered": "Markazda",
+          "minimal": "Faqat matn"
+        },
+        "skills": {
+          "cards": "Chiziqlar",
+          "rings": "Halqalar",
+          "chips": "Guruhlangan teglar",
+          "table": "Jadval"
+        },
+        "projects": {
+          "grid": "To‘r",
+          "compact": "Kichik plitkalar",
+          "stacked": "Katta, ketma-ket",
+          "carousel": "Karusel",
+          "swipe": "Chapga-o‘ngga surish"
+        },
+        "experience": {
+          "timeline": "Vaqt chizig‘i",
+          "cards": "Kartalar",
+          "zigzag": "Zigzag"
+        },
+        "certificates": {
+          "grid": "To‘r",
+          "slider": "Slayder",
+          "list": "Ro‘yxat"
+        },
+        "education": {
+          "cards": "Kartalar",
+          "timeline": "Vaqt chizig‘i",
+          "list": "Ro‘yxat"
+        },
+        "testimonials": {
+          "carousel": "Karusel",
+          "grid": "To‘r",
+          "wall": "Devor"
+        },
+        "blog": {
+          "grid": "To‘r",
+          "list": "Ro‘yxat",
+          "featured": "Eng yangisi katta"
+        }
+      }
     }
   },
   "errors": {

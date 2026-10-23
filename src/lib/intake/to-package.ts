@@ -5,6 +5,7 @@ import { defaultProfile, LANGS, type Lang, type Localized, type LocalizedList } 
 import { SKILL_CATALOG } from "./catalog";
 import { downloadIntakeFile } from "./files";
 import type { IntakeData, IntakeFileRef, OrderCode } from "./types";
+import { defaultDesign, normalizeDesign } from "@/lib/design";
 
 const ref = (f: IntakeFileRef | null | undefined) => (f ? `file:${f.id}` : "");
 
@@ -83,6 +84,7 @@ export async function buildSitePackage(d: IntakeData, order: OrderCode | null, o
     defaultLang: siteLanguages.includes(d.defaultLang) ? d.defaultLang : siteLanguages[0],
     defaultTheme: d.defaultTheme,
     accentColor: d.accentColor,
+    design: { ...defaultDesign(), style: normalizeDesign({ style: d.siteStyle }).style },
     seoTitle: L(titles[0] ? `${d.fullName.trim()} — ${titles[0]}` : d.fullName.trim()),
     seoDescription: L(d.tagline),
   };

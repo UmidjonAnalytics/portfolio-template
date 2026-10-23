@@ -1,3 +1,5 @@
+import { defaultDesign, type SiteDesign } from "./design";
+
 // ---------------------------------------------------------------------------
 // Shared data model. Mirrors DATA-MODEL.md — keep both in sync.
 // ---------------------------------------------------------------------------
@@ -88,6 +90,8 @@ export interface SiteSettings {
   gaId: string;
   /** Hostnames allowed inside the project iframe embed (e.g. app.powerbi.com). */
   embedAllowlist: string[];
+  /** Style, background, motion, spacing and per-section layouts. See lib/design.ts. */
+  design: SiteDesign;
   updatedAt?: number;
 }
 
@@ -276,4 +280,5 @@ export const defaultSettings = (): SiteSettings => ({
     "datastudio.google.com",
     "docs.google.com",
   ],
+  design: defaultDesign(),
 });

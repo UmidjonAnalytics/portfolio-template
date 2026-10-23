@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { accentForeground, applyDesignAttributes, normalizeDesign, resolvedBackground, type SiteDesign } from "./design";
+import { DesignProvider } from "./design-context";
 import { useCollection, useDocument } from "./hooks";
 import { DEFAULTS_STORAGE_KEY, useLocale } from "./i18n";
 import { normalizeLangs } from "./utils";
@@ -8,7 +10,6 @@ import { useTheme } from "./theme";
 import {
   defaultProfile,
   defaultSettings,
-  SECTION_KEYS,
   type BlogPost,
   type Certificate,
   type Education,
@@ -70,6 +71,7 @@ export function mergeSettings(data: Partial<SiteSettings> | null | undefined): S
     seoTitle: { ...base.seoTitle, ...(data.seoTitle ?? {}) },
     seoDescription: { ...base.seoDescription, ...(data.seoDescription ?? {}) },
     embedAllowlist: data.embedAllowlist ?? base.embedAllowlist,
+    design: normalizeDesign(data.design),
     ...langDefaults(data),
   };
 }
@@ -100,24 +102,43 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
   const { applyDefault: applyDefaultTheme, applyAccent } = useTheme();
 
   const profile = useMemo(() => mergeProfile(profileDoc.data), [profileDoc.data]);
-  const settings = useMemo(() => mergeSettings(settingsDoc.data), [settingsDoc.data]);
+  const saved = useMemo(() => mergeSettings(settingsDoc.data), [settingsDoc.data]);
+  const preview = useDesignPreview(mode === "public");
+  const settings = useMemo(
+    () => (preview ? { ...saved, design: preview.design, accentColor: preview.accent || saved.accentColor } : saved),
+    [saved, preview],
+  );
+
+  // The design's CSS applies to the public site only; admin pages keep the plain look.
+  useEffect(() => {
+    applyDesignAttributes(mode === "public" ? settings.design : null);
+  }, [mode, settings.design]);
 
   // Push site defaults (language, theme, accent) into the providers and cache them for the
   // pre-paint script on the next visit.
   useEffect(() => {
     if (settingsDoc.loading) return;
     applyDefaultLang(settings.defaultLang);
-    applyDefaultTheme(settings.defaultTheme);
+    if (!preview?.theme) applyDefaultTheme(settings.defaultTheme);
     applyAccent(settings.accentColor);
+    if (preview) return;
     try {
       localStorage.setItem(
         DEFAULTS_STORAGE_KEY,
-        JSON.stringify({ lang: settings.defaultLang, theme: settings.defaultTheme, accent: settings.accentColor }),
+        JSON.stringify({
+          lang: saved.defaultLang,
+          theme: saved.defaultTheme,
+          accent: saved.accentColor,
+          accentFg: accentForeground(saved.accentColor),
+          style: saved.design.style,
+          bg: resolvedBackground(saved.design),
+          density: saved.design.density,
+        }),
       );
     } catch {
       /* ignore */
     }
-  }, [settingsDoc.loading, settings.defaultLang, settings.defaultTheme, settings.accentColor, applyDefaultLang, applyDefaultTheme, applyAccent]);
+  }, [settingsDoc.loading, settings.defaultLang, settings.defaultTheme, settings.accentColor, saved, preview, applyDefaultLang, applyDefaultTheme, applyAccent]);
 
   // On the public site, never show a language the owner switched off.
   useEffect(() => {
@@ -135,7 +156,7 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
       testimonials,
       blog,
     };
-    const visibleSections = SECTION_KEYS.filter((k) => settings.sections[k] !== false && lists[k].items.length > 0);
+    const visibleSections = settings.design.order.filter((k) => settings.sections[k] !== false && lists[k].items.length > 0);
     const loading = {
       profile: profileDoc.loading,
       settings: settingsDoc.loading,
@@ -166,7 +187,51 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
     };
   }, [profile, settings, profileDoc.loading, profileDoc.exists, settingsDoc.loading, skills, projects, experience, certificates, education, testimonials, blog, messages, mode]);
 
-  return <SiteDataContext.Provider value={value}>{children}</SiteDataContext.Provider>;
+  return (
+    <SiteDataContext.Provider value={value}>
+      <DesignProvider value={settings.design}>{children}</DesignProvider>
+    </SiteDataContext.Provider>
+  );
+}
+
+export const PREVIEW_QUERY = "preview=design";
+export const PREVIEW_MESSAGE = "design-preview";
+
+interface DesignPreview {
+  design: SiteDesign;
+  accent: string;
+  theme: "light" | "dark" | null;
+}
+
+/**
+ * Admin → Design shows the site in an iframe at /?preview=design and posts the unsaved design to
+ * it. Only messages from this same origin are accepted, and nothing is saved or cached.
+ */
+function useDesignPreview(enabled: boolean): DesignPreview | null {
+  const [preview, setPreview] = useState<DesignPreview | null>(null);
+  useEffect(() => {
+    if (!enabled || window.parent === window || !location.search.includes(PREVIEW_QUERY)) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== location.origin || e.source !== window.parent) return;
+      const data = e.data as { type?: string; design?: unknown; accent?: unknown; theme?: unknown; focus?: unknown } | null;
+      if (data?.type !== PREVIEW_MESSAGE) return;
+      const accent = typeof data.accent === "string" && /^#[0-9a-f]{6}$/i.test(data.accent) ? data.accent : "";
+      const theme = data.theme === "light" || data.theme === "dark" ? data.theme : null;
+      setPreview({ design: normalizeDesign(data.design), accent, theme });
+      // The theme is shown without saving it as the visitor's choice (localStorage is shared with admin).
+      if (theme) {
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.style.colorScheme = theme;
+      }
+      // "projects:1712345" scrolls to #projects once the new layout has rendered.
+      const id = typeof data.focus === "string" ? data.focus.split(":")[0] : "";
+      if (/^[a-z]+$/.test(id)) window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    };
+    window.addEventListener("message", onMessage);
+    window.parent.postMessage({ type: `${PREVIEW_MESSAGE}-ready` }, location.origin);
+    return () => window.removeEventListener("message", onMessage);
+  }, [enabled]);
+  return preview;
 }
 
 export function useSiteData(): SiteData {

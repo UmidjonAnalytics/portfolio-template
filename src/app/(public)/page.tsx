@@ -17,15 +17,15 @@ import { intakeOnly } from "@/lib/intake/types";
 import { useSiteData } from "@/lib/site-data";
 import type { SectionKey } from "@/lib/types";
 
-const SECTIONS: { key: SectionKey; Component: () => React.ReactElement | null; cards: number }[] = [
-  { key: "skills", Component: Skills, cards: 6 },
-  { key: "projects", Component: Projects, cards: 3 },
-  { key: "experience", Component: Experience, cards: 2 },
-  { key: "certificates", Component: Certificates, cards: 3 },
-  { key: "education", Component: Education, cards: 2 },
-  { key: "testimonials", Component: Testimonials, cards: 1 },
-  { key: "blog", Component: Blog, cards: 3 },
-];
+const SECTIONS: Record<SectionKey, { Component: () => React.ReactElement | null; cards: number }> = {
+  skills: { Component: Skills, cards: 6 },
+  projects: { Component: Projects, cards: 3 },
+  experience: { Component: Experience, cards: 2 },
+  certificates: { Component: Certificates, cards: 3 },
+  education: { Component: Education, cards: 2 },
+  testimonials: { Component: Testimonials, cards: 1 },
+  blog: { Component: Blog, cards: 3 },
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -43,7 +43,8 @@ function Home() {
     <>
       <Hero />
       <About />
-      {SECTIONS.map(({ key, Component, cards }) => {
+      {settings.design.order.map((key) => {
+        const { Component, cards } = SECTIONS[key];
         if (loading[key] && settings.sections[key] !== false) return <SectionSkeleton key={key} cards={cards} />;
         if (!visibleSections.includes(key)) return null;
         return <Component key={key} />;

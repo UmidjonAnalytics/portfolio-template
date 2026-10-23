@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
+import { useEntrance } from "@/lib/design-context";
 
 interface RevealProps extends Omit<HTMLMotionProps<"div">, "children"> {
   children: ReactNode;
@@ -11,15 +12,15 @@ interface RevealProps extends Omit<HTMLMotionProps<"div">, "children"> {
   className?: string;
 }
 
-/** Fade + rise into view when scrolled to. Respects prefers-reduced-motion. */
+/** Animates into view when scrolled to, using the site's motion setting. Respects prefers-reduced-motion. */
 export function Reveal({ children, delay = 0, y = 22, once = true, className, ...rest }: RevealProps) {
-  const reduce = useReducedMotion();
+  const { from, to, time } = useEntrance();
   return (
     <motion.div
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={from(y)}
+      whileInView={to}
       viewport={{ once, margin: "0px 0px -10% 0px" }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay }}
+      transition={{ duration: time(0.6), ease: [0.22, 1, 0.36, 1], delay: time(delay) }}
       className={className}
       {...rest}
     >

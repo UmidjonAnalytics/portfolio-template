@@ -35,7 +35,8 @@ Customer pays
    with all text and files inside.
 6. **Import.** Sign in to the customer's own site, go to **Settings → Danger zone → Import from
    intake form**, choose the file, confirm. Profile, skills, projects, experience, certificates,
-   education, testimonials, languages, accent colour and theme are all filled in.
+   education, testimonials, languages, style, accent colour and theme are all filled in. Block
+   layouts are left at their defaults; pick them with the customer in **Admin → Design**.
 7. **Track your own progress** with the stage dropdown: Yangi → Sayt yig‘ilmoqda → Topshirildi.
 
 If a customer needs to change something after submitting, press **Qayta ochish** (the circular
@@ -57,7 +58,7 @@ file, which keeps your free Firestore storage from filling up.
 | 5. Ko‘nikmalar | 28 common skills to tick, a level for each, custom skills | At least 3 |
 | 6. Loyihalar | Up to 8 projects: title, summary, domain, tools, date, problem, approach, result, 3 key numbers, up to 3 screenshots, links, "best project" | At least 1, complete |
 | 7. Tajriba va sertifikatlar | Jobs, certificates with images, education, testimonials | All optional |
-| 8. Aloqa va dizayn | Which contacts appear on the site, accent colour, light or dark, an example site, notes | — |
+| 8. Aloqa va dizayn | Which contacts appear on the site, site style (picks a matching colour), accent colour, light or dark, an example site, notes | — |
 | 9. Tekshirish | Summary with edit buttons, two confirmations: the information is real, and the site does not guarantee a job | Both confirmations |
 
 Every field a beginner might freeze at has an example beside it. The project step has worked

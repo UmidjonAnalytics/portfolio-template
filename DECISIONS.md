@@ -141,3 +141,21 @@ Judgment calls made while building, and why. Read this before changing the archi
   allowlist and its rules always match.
 - **Orders-only mode** (`NEXT_PUBLIC_INTAKE_ONLY=true`) forwards `/` to the form and reduces the
   admin menu to Buyurtmalar, so customers never land on an empty portfolio.
+
+## Site design (added 2026-10-23)
+
+- **Styles are CSS token sets, not separate themes.** Every component already draws with the
+  colour, radius, shadow and font variables, so a style only redefines those under
+  `html[data-style=…]`, plus a few decorations (sheet-tab headings in Excel, `-- ` comments in SQL,
+  `In [n]:` cells in Notebook). Adding a style is one CSS block and one entry in `STYLES`.
+- **Classic B/W locks the accent** with `!important` custom properties, which beat the inline
+  `--accent` set from Settings. Text on the accent is chosen by contrast (`accentForeground`), so a
+  light accent gets dark text.
+- **Layouts live inside each section component** behind `useLayout(block)`. Data, filters and the
+  project modal are shared; only the markup changes.
+- **The preview is the real site in an iframe** at `/?preview=design`. The admin page posts the
+  unsaved design to it; the site accepts messages only from its own origin and the parent window,
+  and never saves or caches a previewed design.
+- **Admin pages keep the plain look.** The design attributes are applied only by the public site
+  and the pre-paint script skips `/admin` and `/forma`.
+

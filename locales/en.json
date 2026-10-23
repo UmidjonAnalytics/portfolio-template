@@ -42,7 +42,8 @@
     "more": "More",
     "less": "Less",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "goToSlide": "Go to slide {index}"
   },
   "nav": {
     "home": "Home",
@@ -121,7 +122,11 @@
       "soft": "Soft Skills"
     },
     "proficiency": "Proficiency",
-    "levelOf": "{name}: {level}% proficiency"
+    "levelOf": "{name}: {level}% proficiency",
+    "table": {
+      "skill": "Skill",
+      "category": "Category"
+    }
   },
   "projects": {
     "title": "Projects",
@@ -297,7 +302,8 @@
       "signOut": "Sign out",
       "openSidebar": "Open navigation",
       "closeSidebar": "Close navigation",
-      "orders": "Orders"
+      "orders": "Orders",
+      "design": "Design"
     },
     "dashboard": {
       "title": "Dashboard",
@@ -562,6 +568,128 @@
       "quote": "Quote",
       "undo": "Undo",
       "redo": "Redo"
+    },
+    "design": {
+      "title": "Design",
+      "subtitle": "Style, layouts and transitions. The preview updates as you click; visitors see it after you save.",
+      "style": "Style",
+      "styleHint": "A complete look for the whole site: colours, fonts, corners and background.",
+      "accent": "Accent colour",
+      "accentLocked": "This style uses only black and white, so the accent colour is not used.",
+      "background": "Background",
+      "motion": "Transitions",
+      "motionHint": "How blocks appear while the visitor scrolls.",
+      "speed": "Speed",
+      "density": "Spacing between blocks",
+      "sections": "Blocks",
+      "sectionsHint": "Choose how each block looks. Use the arrows to change their order on the page.",
+      "hero": "Top of the page",
+      "hidden": "hidden: no items yet or switched off",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "preview": "Preview",
+      "desktop": "Computer",
+      "mobile": "Phone",
+      "replay": "Reload preview and replay animations",
+      "openSite": "Open site",
+      "reset": "Reset",
+      "emptyHint": "The site has no content yet, so the preview is mostly empty. Add a profile and a few projects, or load the demo data in Settings.",
+      "styles": {
+        "classic": {
+          "name": "Classic",
+          "desc": "Soft colours, rounded cards, accent glow."
+        },
+        "mono": {
+          "name": "Classic B/W",
+          "desc": "Black and white, serif headings, sharp edges."
+        },
+        "excel": {
+          "name": "Excel",
+          "desc": "Spreadsheet grid, office font, green accent."
+        },
+        "sql": {
+          "name": "SQL",
+          "desc": "Code editor look, monospace headings."
+        },
+        "powerbi": {
+          "name": "Power BI",
+          "desc": "Report canvas with white tiles and shadows."
+        },
+        "notebook": {
+          "name": "Notebook",
+          "desc": "Jupyter-style paper with numbered cells."
+        }
+      },
+      "backgrounds": {
+        "auto": "Style default",
+        "plain": "Plain",
+        "grid": "Grid",
+        "dots": "Dots",
+        "lines": "Lines",
+        "glow": "Glow"
+      },
+      "motions": {
+        "smooth": "Rise",
+        "fade": "Fade",
+        "slide": "Slide in",
+        "zoom": "Zoom",
+        "none": "None"
+      },
+      "speeds": {
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast"
+      },
+      "densities": {
+        "compact": "Compact",
+        "normal": "Normal",
+        "spacious": "Spacious"
+      },
+      "layouts": {
+        "hero": {
+          "split": "Text and photo",
+          "centered": "Centred",
+          "minimal": "Text only"
+        },
+        "skills": {
+          "cards": "Bars",
+          "rings": "Rings",
+          "chips": "Tags by group",
+          "table": "Table"
+        },
+        "projects": {
+          "grid": "Grid",
+          "compact": "Small tiles",
+          "stacked": "Large, one under another",
+          "carousel": "Carousel",
+          "swipe": "Swipe left–right"
+        },
+        "experience": {
+          "timeline": "Timeline",
+          "cards": "Cards",
+          "zigzag": "Zigzag"
+        },
+        "certificates": {
+          "grid": "Grid",
+          "slider": "Slider",
+          "list": "List"
+        },
+        "education": {
+          "cards": "Cards",
+          "timeline": "Timeline",
+          "list": "List"
+        },
+        "testimonials": {
+          "carousel": "Carousel",
+          "grid": "Grid",
+          "wall": "Wall"
+        },
+        "blog": {
+          "grid": "Grid",
+          "list": "List",
+          "featured": "Latest first, large"
+        }
+      }
     }
   },
   "errors": {

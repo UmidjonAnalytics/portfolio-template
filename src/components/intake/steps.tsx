@@ -2,10 +2,11 @@
 
 import { Check, Pencil, Star, X } from "lucide-react";
 import { useState } from "react";
-import { ACCENT_PRESETS, LANG_LABELS, PROJECT_DOMAIN_OPTIONS, PROJECT_TOOL_OPTIONS, SKILL_CATALOG, SKILL_CATEGORY_LABELS, SKILL_LEVELS } from "@/lib/intake/catalog";
+import { ACCENT_PRESETS, LANG_LABELS, STYLE_LABELS, PROJECT_DOMAIN_OPTIONS, PROJECT_TOOL_OPTIONS, SKILL_CATALOG, SKILL_CATEGORY_LABELS, SKILL_LEVELS } from "@/lib/intake/catalog";
 import type { IntakeCertificate, IntakeData, IntakeEducation, IntakeExperience, IntakeProject, IntakeSkill, IntakeTestimonial } from "@/lib/intake/types";
 import { localId } from "@/lib/intake/types";
 import { isGmail, type IntakeErrors } from "@/lib/intake/validate";
+import { STYLES, styleMeta } from "@/lib/design";
 import { LANGS, SKILL_CATEGORIES, type Lang, type SkillCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { AddButton, Area, Card, Check2, Chips, Choice, FileSlot, ImageList, inputCls, Q, Text, Tip } from "./ui";
@@ -755,6 +756,34 @@ export function StepDesign({ d, update, errors }: StepProps) {
 
       <section className="space-y-5">
         <h3 className="font-display text-lg font-semibold">Dizayn</h3>
+        <Q label="Sayt uslubi" hint="Butun sayt ko‘rinishi. Tanlaganingizda unga mos rang ham tanlanadi, xohlasangiz pastda almashtirasiz. Bo‘limlar ko‘rinishini (karusel, jadval va h.k.) keyin birga tanlaymiz.">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="Sayt uslubi">
+            {STYLES.map((s) => {
+              const on = d.siteStyle === s.key;
+              const [bg, surface, fg, line, accent] = s.swatch.light;
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => set({ siteStyle: s.key, accentColor: s.accent })}
+                  className={cn("text-left rounded-2xl border-2 p-2 transition", on ? "border-accent" : "border-line hover:border-line-strong")}
+                >
+                  <span className="relative block h-16 rounded-xl overflow-hidden border" style={{ background: bg, borderColor: line }}>
+                    <span className="absolute left-2.5 top-2.5 text-base font-bold" style={{ color: fg, fontFamily: s.font === "serif" ? "Georgia, serif" : s.font === "mono" ? "var(--font-mono)" : undefined }}>
+                      Aa
+                    </span>
+                    <span className="absolute left-2.5 bottom-2.5 h-2.5 w-8 rounded-sm" style={{ background: accent }} />
+                    <span className="absolute right-2.5 top-2.5 bottom-2.5 w-10 rounded-md border" style={{ background: surface, borderColor: line }} />
+                  </span>
+                  <span className="mt-2 block px-1 text-sm font-semibold">{STYLE_LABELS[s.key].name}</span>
+                  <span className="block px-1 text-xs text-muted leading-snug">{STYLE_LABELS[s.key].description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Q>
         <Q label="Asosiy rang" field="accentColor" error={errors.accentColor} hint="Tugmalar, havolalar va ajratilgan joylar shu rangda bo‘ladi.">
           <div className="flex flex-wrap items-center gap-3">
             {ACCENT_PRESETS.map((c) => (
@@ -829,6 +858,7 @@ export function StepReview({ d, update, errors, goTo }: StepProps & { goTo: (ste
             <span className="h-4 w-4 rounded-full" style={{ background: d.accentColor }} /> {d.accentColor}
           </span>,
         ],
+        ["Uslub", STYLE_LABELS[styleMeta(d.siteStyle).key].name],
         ["Rejim", d.defaultTheme === "dark" ? "Qorong‘i" : "Yorug‘"],
       ],
     },

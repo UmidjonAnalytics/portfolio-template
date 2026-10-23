@@ -118,6 +118,18 @@ Go to **Settings**.
 - **Sections** – switch a whole section off if you do not want it, even if it has content.
 - **SEO title / description** – the text Google shows for your site.
 
+## 8. Design
+
+Go to **Design**. The preview on the right shows your site with the changes before you save.
+
+- **Style** – the look of the whole site: Classic, Classic B/W, Excel, SQL, Power BI or Notebook.
+  Picking one also picks a matching accent color, which you can change.
+- **Background, Transitions, Spacing** – pattern behind the page, how blocks appear while
+  scrolling, and how much space sits between them.
+- **Blocks** – pick how each block looks (for projects: grid, small tiles, large one under another,
+  carousel or swipe) and change their order with the arrows.
+- The phone and moon buttons above the preview show the site on a phone and in dark mode.
+
 ---
 
 ## Tips

@@ -2,13 +2,15 @@
 
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { LayoutGrid, List, Search, SlidersHorizontal, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDesign, useEntrance } from "@/lib/design-context";
 import { useLocale } from "@/lib/i18n";
 import { useSiteData } from "@/lib/site-data";
 import { PROJECT_DOMAINS, PROJECT_TOOLS, type Project } from "@/lib/types";
 import { cn, stripHtml } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
+import { SlideControls, SwipeRow, slideVariants } from "@/components/ui/SwipeRow";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectModal } from "./ProjectModal";
 
@@ -30,8 +32,55 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
+/** One project at a time, large, with arrows and dots. */
+function ProjectCarousel({ items, onOpen }: { items: Project[]; onOpen: (i: number) => void }) {
+  const { motion: motionKey } = useDesign();
+  const { off, time } = useEntrance();
+  const [[index, dir], setState] = useState<[number, number]>([0, 1]);
+  // A swipe ends with a click on the card underneath; ignore that one.
+  const dragged = useRef(false);
+  const safe = Math.min(index, items.length - 1);
+  useEffect(() => setState([0, 1]), [items]);
+  const step = (delta: 1 | -1) => setState(([i]) => [(i + delta + items.length) % items.length, delta]);
+  const variants = slideVariants(off, motionKey);
+  const p = items[safe];
+  return (
+    <div>
+      <div className="relative overflow-hidden">
+        <AnimatePresence mode="wait" custom={dir} initial={false}>
+          <motion.div
+            key={p.id}
+            custom={dir}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: time(0.4), ease: [0.22, 1, 0.36, 1] }}
+            drag={off || items.length < 2 ? false : "x"}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragStart={() => {
+              dragged.current = true;
+            }}
+            onDragEnd={(_, info) => {
+              window.setTimeout(() => (dragged.current = false), 0);
+              if (info.offset.x < -70) step(1);
+              else if (info.offset.x > 70) step(-1);
+            }}
+          >
+            <ProjectCard project={p} view="feature" as="div" onOpen={() => !dragged.current && onOpen(safe)} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <SlideControls count={items.length} index={safe} onGo={(i) => setState([i, i > safe ? 1 : -1])} onStep={step} />
+    </div>
+  );
+}
+
 export function Projects() {
   const { projects } = useSiteData();
+  const { layouts } = useDesign();
+  const layout = layouts.projects;
   const { t, tr, lang } = useLocale();
   const [tools, setTools] = useState<Set<string>>(new Set());
   const [domains, setDomains] = useState<Set<string>>(new Set());
@@ -137,6 +186,7 @@ export function Projects() {
                 ▾
               </span>
             </label>
+            {layout === "grid" && (
             <div className="inline-flex rounded-full border border-line bg-surface p-0.5" role="group">
               <button
                 type="button"
@@ -159,6 +209,7 @@ export function Projects() {
                 <List className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
+            )}
           </div>
         </div>
 
@@ -198,22 +249,43 @@ export function Projects() {
         </div>
       </Reveal>
 
-      <LayoutGroup>
-        {filtered.length === 0 ? (
-          <motion.div layout className="card p-10 text-center">
-            <p className="font-display text-lg font-semibold">{t("projects.noResults")}</p>
-            <p className="mt-1 text-muted">{t("projects.noResultsHint")}</p>
-          </motion.div>
-        ) : (
-          <motion.ul layout className={cn(view === "grid" ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-4")}>
+      {filtered.length === 0 ? (
+        <div className="card p-10 text-center">
+          <p className="font-display text-lg font-semibold">{t("projects.noResults")}</p>
+          <p className="mt-1 text-muted">{t("projects.noResultsHint")}</p>
+        </div>
+      ) : layout === "carousel" ? (
+        <ProjectCarousel items={filtered} onOpen={setOpenIndex} />
+      ) : layout === "swipe" ? (
+        <SwipeRow label={t("projects.title")} itemClassName="w-[85%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.84rem)]">
+          {filtered.map((p, i) => (
+            <ProjectCard key={p.id} project={p} view="grid" as="div" onOpen={() => setOpenIndex(i)} />
+          ))}
+        </SwipeRow>
+      ) : (
+        <LayoutGroup>
+          <motion.ul
+            layout
+            className={cn(
+              layout === "compact" && "grid gap-3 grid-cols-2 lg:grid-cols-4",
+              layout === "stacked" && "flex flex-col gap-6",
+              layout === "grid" && (view === "grid" ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-4"),
+            )}
+          >
             <AnimatePresence mode="popLayout">
               {filtered.map((p, i) => (
-                <ProjectCard key={p.id} project={p} view={view} onOpen={() => setOpenIndex(i)} />
+                <ProjectCard
+                  key={p.id}
+                  project={p}
+                  view={layout === "compact" ? "compact" : layout === "stacked" ? "feature" : view}
+                  reverse={i % 2 === 1}
+                  onOpen={() => setOpenIndex(i)}
+                />
               ))}
             </AnimatePresence>
           </motion.ul>
-        )}
-      </LayoutGroup>
+        </LayoutGroup>
+      )}
 
       <ProjectModal projects={filtered} index={openIndex} onClose={() => setOpenIndex(null)} onNavigate={setOpenIndex} />
     </Section>

@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   MessageSquareQuote,
+  Palette,
   Settings,
   Sparkles,
   UserRound,
@@ -42,6 +43,7 @@ const BASE_NAV = [
   { href: "/admin/testimonials", key: "testimonials", Icon: MessageSquareQuote },
   { href: "/admin/blog", key: "blog", Icon: BookOpen },
   { href: "/admin/messages", key: "messages", Icon: Inbox },
+  { href: "/admin/design", key: "design", Icon: Palette },
   { href: "/admin/settings", key: "settings", Icon: Settings },
 ];
 
