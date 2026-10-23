@@ -1,5 +1,6 @@
 "use client";
 
+import { DesignDemo, designDemoEnabled } from "@/components/public/DesignDemo";
 import { Footer } from "@/components/public/Footer";
 import { Header } from "@/components/public/Header";
 import { SeoSync } from "@/components/public/SeoSync";
@@ -14,6 +15,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         {children}
       </main>
       <Footer />
+      {designDemoEnabled() && <DesignDemo />}
     </SiteDataProvider>
   );
 }

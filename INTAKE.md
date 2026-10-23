@@ -71,12 +71,20 @@ included, and the form says so. The site's buttons and menus are already in all 
 
 ## Where it runs
 
-The form has its own Firebase project, **`portfolio-anketa`**, separate from every customer:
+The form has its own Firebase project, **`portfolio-anketa`**, separate from every customer. The
+same project is also the **demo site** you show to people before they buy:
 
-- Form: <https://portfolio-anketa.web.app/forma> (the bare address forwards there)
-- Admin: <https://portfolio-anketa.web.app/admin> → **Buyurtmalar**
-- Config: `.env.orders` on your computer (git-ignored), with `NEXT_PUBLIC_INTAKE_ONLY=true`, so the
-  site shows only the form and the admin shows only Buyurtmalar.
+- Demo site: <https://portfolio-anketa.web.app> — a made-up analyst (Jasur Karimov) with a
+  **Dizaynni sinash** button, where visitors switch styles and block layouts themselves. Their
+  choices are not saved. The demo's own look is set in Admin → Design.
+- Form: <https://portfolio-anketa.web.app/forma?kod=…> (personal links only)
+- Admin: <https://portfolio-anketa.web.app/admin> → **Buyurtmalar**, plus every content page for the
+  demo
+- Config: `.env.orders` on your computer (git-ignored), with `NEXT_PUBLIC_INTAKE_ENABLED=true` and
+  `NEXT_PUBLIC_DESIGN_DEMO=true`. For a form-only site set `NEXT_PUBLIC_INTAKE_ONLY=true` instead.
+
+Fill the demo once in Admin → Settings → Danger zone → **Seed demo data**. Messages sent through the
+demo's contact form arrive in Admin → Messages, so they double as leads.
 
 To publish a change to the form:
 

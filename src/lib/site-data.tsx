@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { accentForeground, applyDesignAttributes, normalizeDesign, resolvedBackground, type SiteDesign } from "./design";
+import { accentForeground, applyDesignAttributes, normalizeDesign, resolvedBackground, styleMeta, type SiteDesign } from "./design";
 import { DesignProvider } from "./design-context";
 import { useCollection, useDocument } from "./hooks";
 import { DEFAULTS_STORAGE_KEY, useLocale } from "./i18n";
@@ -45,6 +45,10 @@ export interface SiteData {
 }
 
 const SiteDataContext = createContext<SiteData | null>(null);
+
+/** Lets the visitor demo panel try a design without saving it. null goes back to the saved one. */
+const DesignTryContext = createContext<(design: SiteDesign | null) => void>(() => {});
+export const useTryDesign = () => useContext(DesignTryContext);
 
 export function mergeProfile(data: Partial<Profile> | null | undefined): Profile {
   const base = defaultProfile();
@@ -104,10 +108,12 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
   const profile = useMemo(() => mergeProfile(profileDoc.data), [profileDoc.data]);
   const saved = useMemo(() => mergeSettings(settingsDoc.data), [settingsDoc.data]);
   const preview = useDesignPreview(mode === "public");
-  const settings = useMemo(
-    () => (preview ? { ...saved, design: preview.design, accentColor: preview.accent || saved.accentColor } : saved),
-    [saved, preview],
-  );
+  const [tried, setTried] = useState<SiteDesign | null>(null);
+  const settings = useMemo(() => {
+    if (preview) return { ...saved, design: preview.design, accentColor: preview.accent || saved.accentColor };
+    if (tried) return { ...saved, design: tried, accentColor: styleMeta(tried.style).accent };
+    return saved;
+  }, [saved, preview, tried]);
 
   // The design's CSS applies to the public site only; admin pages keep the plain look.
   useEffect(() => {
@@ -189,7 +195,9 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
 
   return (
     <SiteDataContext.Provider value={value}>
-      <DesignProvider value={settings.design}>{children}</DesignProvider>
+      <DesignTryContext.Provider value={setTried}>
+        <DesignProvider value={settings.design}>{children}</DesignProvider>
+      </DesignTryContext.Provider>
     </SiteDataContext.Provider>
   );
 }

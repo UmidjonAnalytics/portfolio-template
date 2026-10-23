@@ -93,6 +93,7 @@ Project settings → Your apps.
 | `NEXT_PUBLIC_USE_EMULATORS` | `true` only when developing against the local emulators |
 | `NEXT_PUBLIC_INTAKE_ENABLED` | `true` only on your own deployment: turns on the intake form at `/forma` and Admin → Buyurtmalar. See [INTAKE.md](INTAKE.md) |
 | `NEXT_PUBLIC_INTAKE_ONLY` | `true` for a deployment that exists only for orders: `/` forwards to the form and the admin shows only Buyurtmalar |
+| `NEXT_PUBLIC_DESIGN_DEMO` | `true` only on the demo site: adds a "Try designs" panel so visitors can switch styles and layouts (not saved) |
 | `SEED_EMAIL`, `SEED_PASSWORD` | Admin credentials used **only** by `npm run seed` on your machine |
 
 All `NEXT_PUBLIC_*` values are safe to expose: Firebase web config is public by design and the

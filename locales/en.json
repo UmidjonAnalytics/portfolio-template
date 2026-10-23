@@ -703,5 +703,11 @@
   "meta": {
     "defaultTitle": "Data Analyst Portfolio",
     "defaultDescription": "Portfolio of a data analyst: projects in Excel, Power BI, SQL, Python and Tableau."
+  },
+  "demo": {
+    "open": "Try designs",
+    "title": "Try a different look",
+    "hint": "Pick a style and how each block looks. Only you see it, nothing is saved.",
+    "reset": "Back to the original"
   }
 }

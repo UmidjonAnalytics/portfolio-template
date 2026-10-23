@@ -703,5 +703,11 @@
   "meta": {
     "defaultTitle": "Ma’lumotlar tahlilchisi portfoliosi",
     "defaultDescription": "Ma’lumotlar tahlilchisi portfoliosi: Excel, Power BI, SQL, Python va Tableau loyihalari."
+  },
+  "demo": {
+    "open": "Dizaynni sinash",
+    "title": "Boshqa ko‘rinishni sinab ko‘ring",
+    "hint": "Uslub va har bir blok ko‘rinishini tanlang. Faqat siz ko‘rasiz, hech narsa saqlanmaydi.",
+    "reset": "Asl holiga qaytarish"
   }
 }

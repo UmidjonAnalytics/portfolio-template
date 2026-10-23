@@ -28,7 +28,7 @@ const now = Date.now();
 const DAY = 86_400_000;
 
 export const seedProfile: Profile = {
-  name: "Abror Ashurov",
+  name: "Jasur Karimov",
   titles: LL(
     ["Data Analyst", "Power BI Developer", "SQL & Python enthusiast"],
     ["Аналитик данных", "Power BI разработчик", "Люблю SQL и Python"],
@@ -51,11 +51,11 @@ export const seedProfile: Profile = {
     ["O‘zbek (ona tili)", "Rus (erkin)", "Ingliz (C1)"],
   ),
   availability: "open",
-  photo: portraitSvg("Abror", 188),
+  photo: portraitSvg("Jasur", 188),
   cv: "",
-  email: "abror.ashurov.demo@example.com",
-  phone: "+998 90 123 45 67",
-  telegram: "abror_analytics",
+  email: "jasur.demo@example.com",
+  phone: "",
+  telegram: "",
   linkedin: "https://www.linkedin.com/in/",
   github: "https://github.com/",
   stats: { projects: 8, yearsExperience: 3, tools: 9, studentsTaught: 40 },
@@ -63,12 +63,12 @@ export const seedProfile: Profile = {
 
 export const seedSettings: SiteSettings = {
   ...defaultSettings(),
-  siteName: "Abror Ashurov",
-  seoTitle: L("Abror Ashurov — Data Analyst", "Аброр Ашуров — аналитик данных", "Abror Ashurov — ma’lumotlar tahlilchisi"),
+  siteName: "Jasur Karimov",
+  seoTitle: L("Jasur Karimov — Data Analyst", "Жасур Каримов — аналитик данных", "Jasur Karimov — ma’lumotlar tahlilchisi"),
   seoDescription: L(
-    "Portfolio of Abror Ashurov, a data analyst working with Power BI, SQL, Python and Excel across retail, banking and education.",
-    "Портфолио Аброра Ашурова — аналитика данных, работающего с Power BI, SQL, Python и Excel в ритейле, банках и образовании.",
-    "Abror Ashurovning portfoliosi — Power BI, SQL, Python va Excel bilan chakana savdo, bank va ta’lim sohalarida ishlaydigan ma’lumotlar tahlilchisi.",
+    "Portfolio of Jasur Karimov, a data analyst working with Power BI, SQL, Python and Excel across retail, banking and education.",
+    "Портфолио Жасура Каримова — аналитика данных, работающего с Power BI, SQL, Python и Excel в ритейле, банках и образовании.",
+    "Jasur Karimovning portfoliosi — Power BI, SQL, Python va Excel bilan chakana savdo, bank va ta’lim sohalarida ishlaydigan ma’lumotlar tahlilchisi.",
   ),
 };
 
@@ -654,9 +654,9 @@ export const seedTestimonials: Seed<Testimonial>[] = [
     role: L("Head of Retail Operations", "Руководитель розничных операций", "Chakana operatsiyalar rahbari"),
     company: "Zumrad Retail Group",
     quote: L(
-      "Abror is the first analyst who asked what decision we needed to make before building a single chart. Our Monday meeting is 40 minutes shorter and far less heated.",
-      "Аброр — первый аналитик, который спросил, какое решение нам нужно принять, прежде чем строить хоть один график. Наше понедельничное совещание стало короче на 40 минут и куда спокойнее.",
-      "Abror — birorta diagramma qurishdan oldin qanday qaror qabul qilishimiz kerakligini so‘ragan birinchi tahlilchi. Dushanba yig‘ilishimiz 40 daqiqaga qisqardi va ancha tinch o‘tadigan bo‘ldi.",
+      "Jasur is the first analyst who asked what decision we needed to make before building a single chart. Our Monday meeting is 40 minutes shorter and far less heated.",
+      "Жасур — первый аналитик, который спросил, какое решение нам нужно принять, прежде чем строить хоть один график. Наше понедельничное совещание стало короче на 40 минут и куда спокойнее.",
+      "Jasur — birorta diagramma qurishdan oldin qanday qaror qabul qilishimiz kerakligini so‘ragan birinchi tahlilchi. Dushanba yig‘ilishimiz 40 daqiqaga qisqardi va ancha tinch o‘tadigan bo‘ldi.",
     ),
     avatar: avatarSvg("Dilnoza Rahimova", 330),
     rating: 5,
@@ -682,9 +682,9 @@ export const seedTestimonials: Seed<Testimonial>[] = [
     role: L("Bootcamp graduate", "Выпускница буткемпа", "Bootcamp bitiruvchisi"),
     company: "EduSpace Academy",
     quote: L(
-      "I came in afraid of formulas and left with a Power BI dashboard in my portfolio. Abror explains things with real examples, never with jargon.",
-      "Я пришла с боязнью формул, а ушла с дашбордом Power BI в портфолио. Аброр объясняет на реальных примерах, без жаргона.",
-      "Formulalardan qo‘rqib kelgandim, portfoliomda Power BI dashbordi bilan ketdim. Abror hamma narsani jargonsiz, real misollar bilan tushuntiradi.",
+      "I came in afraid of formulas and left with a Power BI dashboard in my portfolio. Jasur explains things with real examples, never with jargon.",
+      "Я пришла с боязнью формул, а ушла с дашбордом Power BI в портфолио. Жасур объясняет на реальных примерах, без жаргона.",
+      "Formulalardan qo‘rqib kelgandim, portfoliomda Power BI dashbordi bilan ketdim. Jasur hamma narsani jargonsiz, real misollar bilan tushuntiradi.",
     ),
     avatar: avatarSvg("Malika Tursunova", 20),
     rating: 5,
@@ -738,7 +738,7 @@ export const seedMessages: Omit<Message, "id">[] = [
   {
     name: "Kamola Nazarova",
     email: "kamola.n@example.com",
-    message: "Hi Abror, we run a chain of pharmacies in Samarkand and would love a Power BI dashboard similar to your retail project. Could we schedule a short call next week?",
+    message: "Hi Jasur, we run a chain of pharmacies in Samarkand and would love a Power BI dashboard similar to your retail project. Could we schedule a short call next week?",
     createdAt: now - 2 * DAY,
     read: false,
     locale: "en",
@@ -770,7 +770,7 @@ export const seedMessages: Omit<Message, "id">[] = [
   {
     name: "Bekzod Alimov",
     email: "bekzod.a@example.com",
-    message: "Salom Abror! Loan risk loyihangizdagi SQL ko‘rinishlari haqida savolim bor — window function’larni qanday optimallashtirdingiz? Oldindan rahmat.",
+    message: "Salom Jasur! Loan risk loyihangizdagi SQL ko‘rinishlari haqida savolim bor — window function’larni qanday optimallashtirdingiz? Oldindan rahmat.",
     createdAt: now - 12 * DAY,
     read: true,
     locale: "uz",
