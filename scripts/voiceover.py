@@ -34,6 +34,7 @@ STORY = [
     "Olti xil dizayn — kunduzgi va tungi rejimda.",
     "Loyihalaringiz grafik va natijalar bilan ko‘rsatiladi.",
     "Telefonda ham, kompyuterda ham chiroyli ochiladi.",
+    "Sayt umrbod sizniki. Karyerangizdagi har bir yangilikni admin panel orqali o‘zingiz qo‘shasiz.",
     "Domen, joylash va to‘ldirish — hammasi to‘rt yuz ellik ming so‘m.",
     "Saytingizni hoziroq buyurtma qiling!",
 ]
@@ -60,6 +61,9 @@ def call(url: str, k: str, body: dict | None = None) -> dict:
 
 
 def tts_model(k: str) -> str:
+    # TTS_MODEL=... picks one by name, e.g. when the default model's free daily quota is used up.
+    if os.environ.get("TTS_MODEL"):
+        return os.environ["TTS_MODEL"]
     models = call(f"{API}/models?pageSize=200", k).get("models", [])
     names = [m["name"].split("/")[-1] for m in models if "tts" in m["name"]]
     if not names:

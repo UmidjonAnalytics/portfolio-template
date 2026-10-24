@@ -16,7 +16,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 FR = os.path.join(HERE, "frames")
 VOICE = sys.argv[1] if len(sys.argv) > 1 else "Kore"
-WAV = os.path.join(ROOT, "docs", "offer", "video", f"voiceover-story-{VOICE}.wav")
+SPEED = float(sys.argv[2]) if len(sys.argv) > 2 else 1.0  # voice tempo, pitch unchanged
+SRC_WAV = os.path.join(ROOT, "docs", "offer", "video", f"voiceover-story-{VOICE}.wav")
 OUT = os.path.join(ROOT, "docs", "offer", "video", f"promo-story-{VOICE}.mp4")
 W, H, FPS = 1080, 1920, 30
 FONT_B = r"C:\Windows\Fonts\segoeuib.ttf"
@@ -39,6 +40,7 @@ LOOKS = {
     "sql": (("#04070c", "#13233d"), "dots", "#ffffff"),
     "powerbi": (("#fff8d6", "#f5d742"), None, "#252423"),
     "notebook": (("#fff6ea", "#ffd9b3"), "lines", "#2a1d10"),
+    "night": (("#03161a", "#0b3b3c"), None, "#ffffff"),
 }
 # The live style cycle recorded in record_story.mjs ("designs"): order and timing must match.
 CYCLE = ["classic", "excel", "sql", "powerbi", "mono", "notebook"]
@@ -48,9 +50,10 @@ CYCLE_STEP, CYCLE_START = 0.55, 0.3
 PARTS = [
     ("Shaxsiy portfolio sayt", "laptop", [("classic", "laptop")], 0.15, "classic"),
     ("3 tilda", "tablet", [("languages", "tablet")], 0.1, "mono"),
-    ("6 xil dizayn", "laptop", [("designs", "laptop")], 0.0, "cycle"),
+    ("6 xil dizayn", "laptop", [("designs", "laptop")], 0.3, "cycle"),
     ("Loyihalar va grafiklar", "tablet", [("projects", "tablet")], 0.8, "sql"),
     ("Telefon va kompyuter", "duo", [("powerbi", "laptop"), ("powerbi", "phone")], 0.3, "powerbi"),
+    ("Umrbod sizniki", "laptop", [("admin", "laptop")], 0.0, "night"),
     ("450 000 so‘m", "phone", [("excel", "phone")], 0.2, "excel"),
     ("Hoziroq buyurtma qiling", "trio", [("notebook", "laptop"), ("notebook", "tablet"), ("notebook", "phone")], 0.2, "notebook"),
 ]
@@ -271,6 +274,10 @@ def cta(img, p):
 
 
 # ---------------------------------------------------------------- timeline
+WAV = SRC_WAV
+if SPEED != 1.0:
+    WAV = os.path.join(HERE, "frames", f"voice-{VOICE}-{SPEED}.wav")
+    subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", SRC_WAV, "-filter:a", f"atempo={SPEED}", WAV], check=True)
 PV.VO.LINES = VO.STORY
 starts, voice_len = PV.line_starts(WAV)
 ends = starts[1:] + [voice_len + TAIL]
@@ -304,11 +311,11 @@ def part_frame(i, t_local):
         dy = int((1 - p) * 70)
         img.alpha_composite(shadow, (x - 70, y - 70 + dy))
         img.alpha_composite(canvas, (x, y + dy))
-    big = i == 5
-    headline(img, title, color, (t_local - 0.15) / 0.45, big=big)
-    if i == 5:
+    price, last = len(PARTS) - 2, len(PARTS) - 1
+    headline(img, title, color, (t_local - 0.15) / 0.45, big=i == price)
+    if i == price:
         price_card(img, (t_local - 0.6) / 0.9)
-    if i == 6:
+    if i == last:
         cta(img, (t_local - 0.6) / 0.5)
     else:
         subtitle(img, VO.STORY[i], (t_local - 0.1) / 0.3)

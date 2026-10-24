@@ -32,6 +32,8 @@ const CYCLE_START = 0.3;
 const PARTS = [
   { name: "languages", device: "tablet", design: ["style=mono", "hero=split"], theme: "dark", plan: [["hold", 1300], ["lang", "RU"], ["hold", 1300], ["lang", "EN"], ["hold", 1300], ["scroll", "about", 1500], ["hold", 600]] },
   { name: "designs", device: "laptop", design: ["style=classic", "accent=#0f8b8d", "hero=split"], theme: "light", plan: [["hold", CYCLE_START * 1000], ["cycle"], ["hold", 800]] },
+  // The admin panel, signed in to the local emulator with its throwaway test account.
+  { name: "admin", device: "laptop", path: "admin/experience", login: true, design: ["style=classic"], theme: "dark", plan: [["hold", 700], ["add"], ["hold", 700], ["type", "#e-company", "Uzum Market"], ["hold", 250], ["type", "role", "Senior Data Analyst"], ["hold", 1400]] },
   { name: "projects", device: "tablet", design: ["style=sql", "accent=#2f81f7", "projects=grid"], theme: "dark", plan: [["hold", 500], ["scroll", "projects", 1300], ["hold", 500], ["open"], ["hold", 1300], ["modal", 700, 1600], ["hold", 1200]] },
 ];
 
@@ -47,6 +49,33 @@ async function runPlan(page, plan) {
         const btn = [...document.querySelectorAll("header button")].find((x) => x.textContent.trim() === code);
         btn?.click();
       }, a);
+    } else if (kind === "add") {
+      await page.evaluate(() => document.querySelector("main button svg.lucide-plus")?.closest("button")?.click());
+    } else if (kind === "type") {
+      // "role" is the first text field after the company field in the editor.
+      const handle =
+        a === "role"
+          ? await page.evaluateHandle(() => {
+              const fields = [...document.querySelectorAll("[role=dialog] input")].filter((x) => !x.type || x.type === "text");
+              return fields[fields.findIndex((x) => x.id === "e-company") + 1];
+            })
+          : await page.$(a);
+      await handle.click();
+      // One character at a time through React's own input path; simulated key presses in headless
+      // Chrome only reached the field once.
+      await page.evaluate(
+        async (el, text) => {
+          const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+          el.focus();
+          for (let i = 1; i <= text.length; i++) {
+            setter.call(el, text.slice(0, i));
+            el.dispatchEvent(new Event("input", { bubbles: true }));
+            await new Promise((r) => setTimeout(r, 55));
+          }
+        },
+        handle,
+        b,
+      );
     } else if (kind === "open") {
       await page.evaluate(() => document.querySelector("#projects ul li button")?.click());
     } else if (kind === "cycle") {
@@ -123,13 +152,28 @@ async function record(browser, part) {
     HIDE,
     PORTRAIT,
   );
-  await page.goto(SITE, { waitUntil: "networkidle2", timeout: 120000 });
-  await page.waitForSelector("#projects", { timeout: 60000 });
-  await new Promise((r) => setTimeout(r, 1200));
-  // Let the hero finish animating before recording; these parts are about the interaction.
-  await page.reload({ waitUntil: "networkidle2" });
-  await page.waitForSelector("#projects", { timeout: 60000 });
-  await new Promise((r) => setTimeout(r, 1800));
+  if (part.login) {
+    await page.goto(SITE + "admin/login", { waitUntil: "networkidle2", timeout: 120000 });
+    // The browser profile keeps the session, so the login form only shows the first time.
+    const form = await page.waitForSelector("input[type=email]", { timeout: 6000 }).catch(() => null);
+    if (form) {
+      await page.type("input[type=email]", "umidjonarslonov.analytics@gmail.com");
+      await page.type("input[type=password]", "emulator-only-pass-123");
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => !location.pathname.includes("login"), { timeout: 60000 });
+    }
+    await page.goto(SITE + part.path, { waitUntil: "networkidle2", timeout: 120000 });
+    await page.waitForSelector("main button svg.lucide-plus", { timeout: 60000 });
+    await new Promise((r) => setTimeout(r, 1500));
+  } else {
+    await page.goto(SITE, { waitUntil: "networkidle2", timeout: 120000 });
+    await page.waitForSelector("#projects", { timeout: 60000 });
+    await new Promise((r) => setTimeout(r, 1200));
+    // Let the hero finish animating before recording; these parts are about the interaction.
+    await page.reload({ waitUntil: "networkidle2" });
+    await page.waitForSelector("#projects", { timeout: 60000 });
+    await new Promise((r) => setTimeout(r, 1800));
+  }
 
   const cdp = await page.createCDPSession();
   const frames = [];
