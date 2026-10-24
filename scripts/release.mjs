@@ -101,7 +101,12 @@ const config = {
     public: "out",
     cleanUrls: true,
     trailingSlash: false,
-    redirects: intakeOnly ? [{ source: "/", destination: "/forma", type: 302 }] : [],
+    // Orders deployment: "/" is the product page when the demo has its own path (NEXT_PUBLIC_HOME_PATH).
+    redirects: intakeOnly
+      ? [{ source: "/", destination: "/forma", type: 302 }]
+      : env.NEXT_PUBLIC_HOME_PATH && env.NEXT_PUBLIC_HOME_PATH !== "/"
+        ? [{ source: "/", destination: "/info", type: 302 }]
+        : [],
     // Every blog address is served the one prerendered blog page, which reads the slug itself.
     rewrites: [{ source: "/blog/**", destination: "/blog/_.html" }],
     headers: [

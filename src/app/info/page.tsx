@@ -22,6 +22,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { JOBS, REFERRAL_REWARD } from "@/lib/intake/catalog";
+import { HOME } from "@/lib/home";
 import { intakeEnabled } from "@/lib/intake/types";
 
 /**
@@ -32,7 +33,8 @@ import { intakeEnabled } from "@/lib/intake/types";
 const PRICE = "450 000 so‘m";
 /** Telegram username for orders and questions, without @ (NEXT_PUBLIC_SUPPORT_TELEGRAM). */
 const SUPPORT = (process.env.NEXT_PUBLIC_SUPPORT_TELEGRAM ?? "").replace(/^@/, "").trim();
-const orderHref = SUPPORT ? `https://t.me/${SUPPORT}` : "/";
+const orderHref = SUPPORT ? `https://t.me/${SUPPORT}` : HOME;
+const BRAND = "PortfolioPro";
 
 const FEATURES = [
   { Icon: Globe2, title: "O‘z domeningiz", text: "ismingiz.uz — rezyume o‘rniga bitta havola." },
@@ -80,7 +82,7 @@ function OrderButtons({ center = true }: { center?: boolean }) {
         {SUPPORT ? "Telegram’da buyurtma berish" : "Namunani ko‘rish"}
       </Button>
       {SUPPORT && (
-        <Button href="/" variant="outline" size="lg">
+        <Button href={HOME} variant="outline" size="lg">
           Namunani ko‘rish
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
@@ -94,13 +96,27 @@ export default function InfoPage() {
   return (
     <main className="min-h-screen bg-bg">
       {/* One string each: React leaves <title> empty when it has several children. */}
-      <title>{`Shaxsiy portfolio sayt — ${PRICE}`}</title>
+      <title>{`${BRAND} — shaxsiy portfolio sayt, ${PRICE}`}</title>
+      <link rel="icon" href="/brand-icon.png" />
       <meta name="description" content={`3 tilda, 6 xil dizayn, o‘z domeningiz va umrbod admin panel. ${PRICE}, oylik to‘lovsiz.`} />
-      <meta property="og:title" content={`Shaxsiy portfolio sayt — ${PRICE}`} />
+      <meta property="og:title" content={`${BRAND} — shaxsiy portfolio sayt`} />
+      <meta property="og:image" content="/brand-icon.png" />
       <meta property="og:description" content="Ish beruvchiga rezyume emas — o‘z saytingizni yuboring." />
 
       <header className="mesh">
-        <div className="mx-auto max-w-5xl px-5 pt-14 pb-16 sm:pt-24 sm:pb-24 text-center">
+        <div className="mx-auto max-w-5xl px-5 pt-8 flex items-center justify-between gap-4">
+          <span className="inline-flex items-center gap-2.5 font-display text-lg font-semibold">
+            {/* eslint-disable-next-line @next/next/no-img-element -- static brand icon */}
+            <img src="/brand-icon.png" alt="" width={36} height={36} className="h-9 w-9 rounded-xl" />
+            {BRAND}
+          </span>
+          {SUPPORT && (
+            <a href={orderHref} className="text-sm font-semibold text-accent-strong hover:underline">
+              @{SUPPORT}
+            </a>
+          )}
+        </div>
+        <div className="mx-auto max-w-5xl px-5 pt-10 pb-16 sm:pt-16 sm:pb-24 text-center">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-accent-strong">Shaxsiy portfolio sayt</p>
           <h1 className="mt-4 font-display text-4xl sm:text-6xl font-semibold leading-tight text-balance">Ish beruvchiga rezyume emas — o‘z saytingizni yuboring</h1>
           <p className="mt-5 text-lg text-muted max-w-2xl mx-auto">3 tilda, 6 xil dizayn, o‘z domeningiz va umrbod admin panel. Hammasi bitta narxda.</p>
@@ -122,7 +138,7 @@ export default function InfoPage() {
           <video src="/promo.mp4" controls playsInline preload="metadata" className="block w-full aspect-[9/16]" />
         </div>
         <p className="mt-6 text-center">
-          <Link href="/" className="font-semibold text-accent-strong hover:underline">
+          <Link href={HOME} className="font-semibold text-accent-strong hover:underline">
             Namuna saytni oching — ismingiz va rasmingizni qo‘yib ko‘ring
           </Link>
         </p>

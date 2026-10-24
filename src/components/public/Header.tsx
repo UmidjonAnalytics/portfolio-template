@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/i18n";
 import { useSiteData } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 import { LangSwitcher, ThemeToggle } from "@/components/ui/Switchers";
+import { HOME, homeHref } from "@/lib/home";
 
 export function useNavItems() {
   const { visibleSections } = useSiteData();
@@ -32,7 +33,7 @@ export function Header() {
   useBodyScrollLock(open);
 
   const brand = settings.siteName || profile.name || t("meta.defaultTitle");
-  const isHome = pathname === "/";
+  const isHome = pathname === HOME;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -85,7 +86,7 @@ export function Header() {
         )}
       >
         <div className="container-x h-16 sm:h-[72px] flex items-center justify-between gap-4">
-          <Link href="/" className="font-display font-semibold text-base sm:text-lg tracking-tight truncate max-w-[55vw] lg:max-w-[16rem] 2xl:max-w-[22rem] shrink-0" aria-label={t("nav.home")}>
+          <Link href={HOME} className="font-display font-semibold text-base sm:text-lg tracking-tight truncate max-w-[55vw] lg:max-w-[16rem] 2xl:max-w-[22rem] shrink-0" aria-label={t("nav.home")}>
             <span className="text-accent-strong">/</span> {brand}
           </Link>
 
@@ -93,7 +94,7 @@ export function Header() {
             {items.map((item) => (
               <Link
                 key={item.id}
-                href={`/#${item.id}`}
+                href={homeHref(item.id)}
                 aria-current={active === item.id ? "location" : undefined}
                 className={cn(
                   "px-2.5 2xl:px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition",
@@ -155,7 +156,7 @@ export function Header() {
                 {items.map((item, i) => (
                   <motion.li key={item.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.04 * i }}>
                     <Link
-                      href={`/#${item.id}`}
+                      href={homeHref(item.id)}
                       onClick={() => setOpen(false)}
                       className="block px-4 py-3 rounded-2xl text-base font-semibold text-fg hover:bg-surface-2"
                     >

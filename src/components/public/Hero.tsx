@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { homeHref } from "@/lib/home";
 
 function useTyping(words: string[], enabled: boolean) {
   const [text, setText] = useState(words[0] ?? "");
@@ -187,7 +188,7 @@ export function Hero() {
 
       <motion.div {...rise(0.28)} className={cn("mt-8 flex flex-wrap gap-3", centered && "justify-center")}>
         {projects.length > 0 && (
-          <Button href="/#projects" size="lg">
+          <Button href={homeHref("projects")} size="lg">
             <FolderKanban className="h-4 w-4" aria-hidden="true" />
             {t("hero.viewProjects")}
           </Button>
@@ -198,7 +199,7 @@ export function Hero() {
             {t("hero.downloadCV")}
           </Button>
         )}
-        <Button href="/#contact" variant={projects.length > 0 ? "ghost" : "primary"} size="lg">
+        <Button href={homeHref("contact")} variant={projects.length > 0 ? "ghost" : "primary"} size="lg">
           <Mail className="h-4 w-4" aria-hidden="true" />
           {t("hero.contact")}
         </Button>

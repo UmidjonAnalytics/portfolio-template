@@ -24,6 +24,13 @@ FONT_B = r"C:\Windows\Fonts\segoeuib.ttf"
 FONT_R = r"C:\Windows\Fonts\segoeui.ttf"
 PUSH = 0.5  # slide between parts
 TAIL = 1.2
+INTRO = 1.9  # logo animation before the voice starts
+
+# The brand on screen from the first frame: what to search for on Telegram, and the site.
+BRAND = os.environ.get("PROMO_BRAND", "PortfolioPro")
+HANDLE = os.environ.get("PROMO_HANDLE", "@portfoliopro")
+DOMAIN = os.environ.get("PROMO_DOMAIN", "portfoliopro.uz")
+BRAND_DIR = os.path.join(HERE, "brand")
 
 _spec = importlib.util.spec_from_file_location("vo", os.path.join(ROOT, "scripts", "voiceover.py"))
 VO = importlib.util.module_from_spec(_spec)
@@ -258,6 +265,81 @@ def price_card(img, p):
     img.alpha_composite(layer)
 
 
+P_WHITE = Image.open(os.path.join(BRAND_DIR, "p-white.png")).convert("RGBA")
+P_ORANGE = Image.open(os.path.join(BRAND_DIR, "p-orange.png")).convert("RGBA")
+LOGO_SMALL = Image.open(os.path.join(BRAND_DIR, "logo-160.png")).convert("RGBA").resize((64, 64), Image.LANCZOS)
+
+
+def brand_bar(img):
+    """Logo, name and Telegram handle at the top of every part."""
+    layer = Image.new("RGBA", (W, 120), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    d.rounded_rectangle([40, 28, W - 40, 112], radius=42, fill=(255, 255, 255, 232))
+    layer.alpha_composite(LOGO_SMALL, (52, 38))
+    d.text((132, 46), BRAND, font=font(FONT_B, 40), fill=(15, 30, 32, 255))
+    f = font(FONT_B, 36)
+    tw = d.textlength(HANDLE, font=f)
+    tg_w = d.textlength("Telegram", font=font(FONT_R, 26))
+    d.text((W - 72 - tw, 52), HANDLE, font=f, fill=(15, 120, 122, 255))
+    d.text((W - 72 - tw - tg_w - 14, 60), "Telegram", font=font(FONT_R, 26), fill=(90, 100, 104, 255))
+    img.alpha_composite(layer, (0, 0))
+
+
+@lru_cache(maxsize=1)
+def intro_bg():
+    a, b = hexrgb("#0b3b3c"), hexrgb("#0f8b8d")
+    im = Image.new("RGB", (W, H))
+    d = ImageDraw.Draw(im)
+    for y in range(H):
+        t = y / (H - 1)
+        d.line([(0, y), (W, y)], fill=tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(3)))
+    glow = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(glow).ellipse([140, 500, 940, 1300], fill=70)
+    im.paste(Image.new("RGB", (W, H), (255, 255, 255)), (0, 0), glow.filter(ImageFilter.GaussianBlur(160)))
+    return im
+
+
+def ease_out_back(x, k=1.6):
+    x -= 1
+    return 1 + (k + 1) * x**3 + k * x**2
+
+
+def intro_frame(t):
+    """The PP monogram assembles: white P drops in, orange P slides in behind it, then the name."""
+    img = intro_bg().convert("RGBA")
+    ox, oy = (W - 520) // 2, 520
+    pw = clamp(t / 0.55)
+    po = clamp((t - 0.25) / 0.55)
+    if po > 0:
+        layer = P_ORANGE.copy()
+        layer.putalpha(Image.eval(layer.getchannel("A"), lambda v: int(v * clamp(po * 2))))
+        img.alpha_composite(layer, (ox + int((1 - ease_out_back(po)) * 420), oy))
+    if pw > 0:
+        img.alpha_composite(P_WHITE, (ox, oy - int((1 - ease_out_back(pw)) * 700)))
+    d = ImageDraw.Draw(img)
+    q = ease_out(clamp((t - 0.7) / 0.45))
+    if q > 0:
+        f = font(FONT_B, 120)
+        tw = d.textlength(BRAND, font=f)
+        layer = Image.new("RGBA", (W, 200), (0, 0, 0, 0))
+        ImageDraw.Draw(layer).text(((W - tw) / 2, 20), BRAND, font=f, fill=(255, 255, 255, int(255 * q)))
+        img.alpha_composite(layer, (0, 1080 + int((1 - q) * 50)))
+    r = ease_out(clamp((t - 1.0) / 0.4))
+    if r > 0:
+        layer = Image.new("RGBA", (W, 200), (0, 0, 0, 0))
+        ld = ImageDraw.Draw(layer)
+        f = font(FONT_B, 54)
+        label = f"Telegram: {HANDLE}"
+        tw = ld.textlength(label, font=f)
+        ld.rounded_rectangle([(W - tw) / 2 - 44, 20, (W + tw) / 2 + 44, 120], radius=50, fill=(255, 154, 77, int(255 * r)))
+        ld.text(((W - tw) / 2, 36), label, font=f, fill=(20, 24, 26, int(255 * r)))
+        img.alpha_composite(layer, (0, 1270 + int((1 - r) * 40)))
+        f2 = font(FONT_R, 44)
+        tw2 = d.textlength(DOMAIN, font=f2)
+        d.text(((W - tw2) / 2, 1440), DOMAIN, font=f2, fill=(220, 245, 242, int(255 * r)))
+    return img
+
+
 def cta(img, p):
     if p <= 0:
         return
@@ -268,9 +350,12 @@ def cta(img, p):
     bx, by = (W - bw) // 2, 1700 - int((1 - a) * 60)
     d.rounded_rectangle([bx, by, bx + bw, by + bh], radius=65, fill=(228, 110, 27, int(255 * a)))
     f = font(FONT_B, 50)
-    txt = "portfolio-anketa.web.app"
+    txt = f"Telegram: {HANDLE}"
     tw = d.textlength(txt, font=f)
     d.text(((W - tw) / 2, by + 32), txt, font=f, fill=(255, 255, 255, int(255 * a)))
+    f2 = font(FONT_B, 40)
+    tw2 = d.textlength(DOMAIN, font=f2)
+    d.text(((W - tw2) / 2, by + bh + 14), DOMAIN, font=f2, fill=(42, 29, 16, int(255 * a)))
     img.alpha_composite(layer)
 
 
@@ -281,8 +366,8 @@ if SPEED != 1.0:
     subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-loglevel", "error", "-i", SRC_WAV, "-filter:a", f"atempo={SPEED}", WAV], check=True)
 PV.VO.LINES = VO.STORY
 starts, voice_len = PV.line_starts(WAV)
-ends = starts[1:] + [voice_len + TAIL]
-total = voice_len + TAIL
+starts = [s + INTRO for s in starts]
+total = INTRO + voice_len + TAIL
 print("parts at", [round(s, 2) for s in starts], "length", round(total, 1))
 
 
@@ -320,25 +405,29 @@ def part_frame(i, t_local):
         cta(img, (t_local - 0.6) / 0.5)
     else:
         subtitle(img, VO.STORY[i], (t_local - 0.1) / 0.3)
+    brand_bar(img)
     return img
 
 
 ff = imageio_ffmpeg.get_ffmpeg_exe()
 proc = subprocess.Popen(
     [ff, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", "-i", WAV,
-     "-map", "0:v", "-map", "1:a", "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-pix_fmt", "yuv420p",
+     "-map", "0:v", "-map", "1:a", "-af", f"adelay={int(INTRO * 1000)}:all=1", "-c:v", "libx264", "-preset", "medium", "-crf", "19", "-pix_fmt", "yuv420p",
      "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.3f}", "-movflags", "+faststart", OUT],
     stdin=subprocess.PIPE,
 )
 n = int(total * FPS)
 for k in range(n):
     tg = k / FPS
+    if tg < starts[0]:
+        proc.stdin.write(intro_frame(tg).convert("RGB").tobytes())
+        continue
     i = max(j for j in range(len(PARTS)) if starts[j] <= tg)
     frame = part_frame(i, tg - starts[i])
-    # Push: the previous part slides out left while this one comes in from the right.
-    if i > 0 and tg - starts[i] < PUSH:
+    # Push: the previous part (or the intro) slides out left while this one comes in from the right.
+    if tg - starts[i] < PUSH:
         q = ease_in_out((tg - starts[i]) / PUSH)
-        prev = part_frame(i - 1, tg - starts[i - 1])
+        prev = part_frame(i - 1, tg - starts[i - 1]) if i > 0 else intro_frame(tg)
         cut = int(q * W)
         both = Image.new("RGBA", (W, H))
         if cut < W:

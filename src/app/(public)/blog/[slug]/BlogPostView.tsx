@@ -12,6 +12,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { useLocale } from "@/lib/i18n";
 import { useSiteData } from "@/lib/site-data";
 import { formatDate } from "@/lib/utils";
+import { homeHref } from "@/lib/home";
 
 /**
  * In a static export every /blog/<slug> address is served the one prerendered page for the
@@ -55,7 +56,7 @@ export function BlogPostView() {
       <div className="container-x py-24 text-center">
         <h1 className="font-display text-3xl font-semibold">{t("errors.notFound")}</h1>
         <p className="mt-2 text-muted">{t("blog.notFound")}</p>
-        <Link href="/#blog" className="mt-6 inline-flex items-center gap-2 font-semibold text-accent-strong hover:underline">
+        <Link href={homeHref("blog")} className="mt-6 inline-flex items-center gap-2 font-semibold text-accent-strong hover:underline">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {t("blog.backToPosts")}
         </Link>
@@ -68,7 +69,7 @@ export function BlogPostView() {
   return (
     <article className="container-x py-12 sm:py-16">
       <div className="max-w-3xl mx-auto">
-        <Link href="/#blog" className="inline-flex items-center gap-2 text-sm font-semibold text-muted hover:text-fg">
+        <Link href={homeHref("blog")} className="inline-flex items-center gap-2 text-sm font-semibold text-muted hover:text-fg">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {t("blog.backToPosts")}
         </Link>

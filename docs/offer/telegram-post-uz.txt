@@ -1,11 +1,12 @@
-🚀 Shaxsiy portfolio sayt — 450 000 so‘m
+🚀 PortfolioPro — shaxsiy portfolio sayt, 450 000 so‘m
 
 Ish beruvchiga oddiy rezyume emas — o‘z saytingiz havolasini yuboring.
 
 👀 Saytingiz qanday bo‘lishini hoziroq ko‘ring — ismingiz va rasmingizni qo‘yib:
-portfolio-anketa.web.app
+portfoliopro.uz/namuna
 
-ℹ️ Batafsil ma’lumot va savollar: portfolio-anketa.web.app/info
+ℹ️ Batafsil ma’lumot va savollar: portfoliopro.uz
+💬 Buyurtma va savollar: Telegram @portfoliopro
 
 Siz olasiz:
 
@@ -31,7 +32,7 @@ Taklif kodingizni sayt buyurtma qilganingizdan keyin olasiz.
 
 Qanday ishlaydi:
 1️⃣ To‘lov qilasiz — shaxsiy havola olasiz
-2️⃣ Telefondan oddiy anketani to‘ldirasiz (namunasi: portfolio-anketa.web.app/forma?namuna=1)
+2️⃣ Telefondan oddiy anketani to‘ldirasiz (namunasi: portfoliopro.uz/forma?namuna=1)
 3️⃣ Saytingiz tayyor!
 
 ℹ️ Sayt ishga joylashishni kafolatlamaydi, lekin sizni ish beruvchi oldida professional ko‘rsatadi.
