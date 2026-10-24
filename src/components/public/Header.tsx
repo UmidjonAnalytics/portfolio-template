@@ -85,7 +85,7 @@ export function Header() {
         )}
       >
         <div className="container-x h-16 sm:h-[72px] flex items-center justify-between gap-4">
-          <Link href="/" className="font-display font-semibold text-base sm:text-lg tracking-tight truncate max-w-[55vw] lg:max-w-[16rem] xl:max-w-[22rem] shrink-0" aria-label={t("nav.home")}>
+          <Link href="/" className="font-display font-semibold text-base sm:text-lg tracking-tight truncate max-w-[55vw] lg:max-w-[16rem] 2xl:max-w-[22rem] shrink-0" aria-label={t("nav.home")}>
             <span className="text-accent-strong">/</span> {brand}
           </Link>
 
@@ -96,7 +96,7 @@ export function Header() {
                 href={`/#${item.id}`}
                 aria-current={active === item.id ? "location" : undefined}
                 className={cn(
-                  "px-3.5 py-2 rounded-full text-sm font-semibold transition",
+                  "px-2.5 2xl:px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition",
                   active === item.id && isHome ? "bg-accent-soft text-accent-strong" : "text-fg-2 hover:text-fg hover:bg-surface-2",
                 )}
               >

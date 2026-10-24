@@ -52,3 +52,7 @@ emulator-data/
 # release script output
 .release/
 firebase.release.json
+
+# promo video recordings
+scripts/promo/frames/
+scripts/promo/profile/

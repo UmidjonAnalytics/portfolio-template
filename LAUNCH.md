@@ -23,11 +23,11 @@ project, `portfolio-anketa`.
 ## 2. The post
 
 - Text: [docs/offer/telegram-post-uz.txt](docs/offer/telegram-post-uz.txt)
-- Video, silent, ready to post: [docs/offer/video/promo.gif](docs/offer/video/promo.gif) (15 s,
-  Telegram plays it like a video)
-- Voice-over script for Gemini TTS and how to join it in CapCut:
-  [docs/offer/video/voiceover-uz.txt](docs/offer/video/voiceover-uz.txt)
-- Single frames for stories or a carousel post: `docs/offer/video/scene-1.png` … `scene-5.png`
+- Video: [docs/offer/video/promo-devices.mp4](docs/offer/video/promo-devices.mp4), 25 s, the real
+  site scrolling on laptop, tablet and phone in six styles. Remake it with `scripts/promo/`
+  (instructions at the top of `record.mjs`).
+- Older, shorter versions that also show the form and the referral bonus: `promo-<voice>.mp4`,
+  `promo.gif` and `scene-1.png` … `scene-5.png` in the same folder.
 
 Post the video with the text as its caption, then pin it.
 
