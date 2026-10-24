@@ -705,9 +705,15 @@
     "defaultDescription": "Portfolio of a data analyst: projects in Excel, Power BI, SQL, Python and Tableau."
   },
   "demo": {
-    "open": "Try designs",
-    "title": "Try a different look",
-    "hint": "Pick a style and how each block looks. Only you see it, nothing is saved.",
-    "reset": "Back to the original"
+    "open": "Try it as yours",
+    "title": "Make it yours",
+    "hint": "Put in your name and photo, then pick a style and how each block looks. Nothing is saved.",
+    "reset": "Back to the original",
+    "yourName": "Your name",
+    "namePlaceholder": "First and last name",
+    "photoChoose": "Add your photo",
+    "photoChange": "Change photo",
+    "clearMe": "Remove my name and photo",
+    "privacy": "Your name and photo stay in this browser only. Nothing is uploaded."
   }
 }

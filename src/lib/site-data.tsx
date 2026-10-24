@@ -46,9 +46,21 @@ export interface SiteData {
 
 const SiteDataContext = createContext<SiteData | null>(null);
 
-/** Lets the visitor demo panel try a design without saving it. null goes back to the saved one. */
-const DesignTryContext = createContext<(design: SiteDesign | null) => void>(() => {});
-export const useTryDesign = () => useContext(DesignTryContext);
+/** A visitor's own name and photo on the demo site. Kept in their browser, never written to Firestore. */
+export interface TryMe {
+  name: string;
+  photo: string;
+}
+
+interface TryApi {
+  /** Try a design without saving it. null goes back to the saved one. */
+  design: (design: SiteDesign | null) => void;
+  me: (me: TryMe | null) => void;
+}
+
+const TryContext = createContext<TryApi>({ design: () => {}, me: () => {} });
+/** Used only by the demo panel (components/public/DesignDemo.tsx). */
+export const useTry = () => useContext(TryContext);
 
 export function mergeProfile(data: Partial<Profile> | null | undefined): Profile {
   const base = defaultProfile();
@@ -105,15 +117,23 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
   const { applyDefault: applyDefaultLang, lang, setLang } = useLocale();
   const { applyDefault: applyDefaultTheme, applyAccent } = useTheme();
 
-  const profile = useMemo(() => mergeProfile(profileDoc.data), [profileDoc.data]);
+  const [me, setMe] = useState<TryMe | null>(null);
+  const profile = useMemo(() => {
+    const p = mergeProfile(profileDoc.data);
+    return me ? { ...p, name: me.name.trim() || p.name, photo: me.photo || p.photo } : p;
+  }, [profileDoc.data, me]);
   const saved = useMemo(() => mergeSettings(settingsDoc.data), [settingsDoc.data]);
   const preview = useDesignPreview(mode === "public");
   const [tried, setTried] = useState<SiteDesign | null>(null);
   const settings = useMemo(() => {
     if (preview) return { ...saved, design: preview.design, accentColor: preview.accent || saved.accentColor };
-    if (tried) return { ...saved, design: tried, accentColor: styleMeta(tried.style).accent };
-    return saved;
-  }, [saved, preview, tried]);
+    let s = saved;
+    if (tried) s = { ...s, design: tried, accentColor: styleMeta(tried.style).accent };
+    // The visitor's own name replaces the demo name in the header, footer and browser tab.
+    if (me?.name.trim()) s = { ...s, siteName: me.name.trim(), seoTitle: { en: "", ru: "", uz: "" } };
+    return s;
+  }, [saved, preview, tried, me]);
+  const tryApi = useMemo<TryApi>(() => ({ design: setTried, me: setMe }), []);
 
   // The design's CSS applies to the public site only; admin pages keep the plain look.
   useEffect(() => {
@@ -195,9 +215,9 @@ export function SiteDataProvider({ children, mode = "public" }: { children: Reac
 
   return (
     <SiteDataContext.Provider value={value}>
-      <DesignTryContext.Provider value={setTried}>
+      <TryContext.Provider value={tryApi}>
         <DesignProvider value={settings.design}>{children}</DesignProvider>
-      </DesignTryContext.Provider>
+      </TryContext.Provider>
     </SiteDataContext.Provider>
   );
 }

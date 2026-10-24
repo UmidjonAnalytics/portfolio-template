@@ -74,7 +74,8 @@ included, and the form says so. The site's buttons and menus are already in all 
 The form has its own Firebase project, **`portfolio-anketa`**, separate from every customer. The
 same project is also the **demo site** you show to people before they buy:
 
-- Demo site: <https://portfolio-anketa.web.app> — a made-up analyst (Jasur Karimov) with a
+- Demo site: <https://portfolio-anketa.web.app> — a made-up analyst (Jasur Karimov). Visitors can type
+  their own name and add their photo (kept only in their browser), and the
   **Dizaynni sinash** button, where visitors switch styles and block layouts themselves. Their
   choices are not saved. The demo's own look is set in Admin → Design.
 - Form: <https://portfolio-anketa.web.app/forma?kod=…> (personal links only)

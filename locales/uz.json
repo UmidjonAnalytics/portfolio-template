@@ -705,9 +705,15 @@
     "defaultDescription": "Ma’lumotlar tahlilchisi portfoliosi: Excel, Power BI, SQL, Python va Tableau loyihalari."
   },
   "demo": {
-    "open": "Dizaynni sinash",
-    "title": "Boshqa ko‘rinishni sinab ko‘ring",
-    "hint": "Uslub va har bir blok ko‘rinishini tanlang. Faqat siz ko‘rasiz, hech narsa saqlanmaydi.",
-    "reset": "Asl holiga qaytarish"
+    "open": "O‘zimniki qilib ko‘rish",
+    "title": "O‘zingizniki qilib ko‘ring",
+    "hint": "Ismingizni yozing va rasm qo‘shing, keyin uslub va bloklar ko‘rinishini tanlang. Hech narsa saqlanmaydi.",
+    "reset": "Asl holiga qaytarish",
+    "yourName": "Ismingiz",
+    "namePlaceholder": "Ism va familiya",
+    "photoChoose": "Rasmingizni qo‘shing",
+    "photoChange": "Rasmni almashtirish",
+    "clearMe": "Ismim va rasmimni olib tashlash",
+    "privacy": "Ism va rasm faqat shu brauzerda qoladi. Hech narsa yuklanmaydi."
   }
 }
