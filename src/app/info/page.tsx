@@ -22,6 +22,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { JOBS, REFERRAL_REWARD } from "@/lib/intake/catalog";
+import { STYLES } from "@/lib/design";
 import { HOME } from "@/lib/home";
 import { intakeEnabled } from "@/lib/intake/types";
 
@@ -35,11 +36,13 @@ const PRICE = "450 000 so‘m";
 const SUPPORT = (process.env.NEXT_PUBLIC_SUPPORT_TELEGRAM ?? "").replace(/^@/, "").trim();
 const orderHref = SUPPORT ? `https://t.me/${SUPPORT}` : HOME;
 const BRAND = "PortfolioPro";
+/** Counted from the styles, so adding one updates the page. */
+const DESIGNS = STYLES.length;
 
 const FEATURES = [
   { Icon: Globe2, title: "O‘z domeningiz", text: "ismingiz.uz — rezyume o‘rniga bitta havola." },
   { Icon: Languages, title: "3 tilda", text: "O‘zbek, rus va ingliz. Keraksizini o‘chirib qo‘yasiz." },
-  { Icon: Palette, title: "6 xil dizayn", text: "Klassik, Oq-qora, Excel, SQL, Power BI, Notebook — kunduzgi va tungi rejim." },
+  { Icon: Palette, title: `${DESIGNS} xil dizayn`, text: "Har biri kunduzgi va tungi rejimda. Ko‘rinishni istalgan vaqtda o‘zingiz almashtirasiz." },
   { Icon: Smartphone, title: "Har qanday ekranda", text: "Telefon, planshet va kompyuterda chiroyli ochiladi." },
   { Icon: BarChart3, title: "Loyihalar", text: "Muammo, yechim, natija va interaktiv grafiklar bilan." },
   { Icon: LayoutDashboard, title: "Admin panel — umrbod", text: "Yangi ish, loyiha yoki sertifikatni o‘zingiz qo‘shasiz. Dasturchi kerak emas." },
@@ -98,7 +101,7 @@ export default function InfoPage() {
       {/* One string each: React leaves <title> empty when it has several children. */}
       <title>{`${BRAND} — shaxsiy portfolio sayt, ${PRICE}`}</title>
       <link rel="icon" href="/brand-icon.png" />
-      <meta name="description" content={`3 tilda, 6 xil dizayn, o‘z domeningiz va umrbod admin panel. ${PRICE}, oylik to‘lovsiz.`} />
+      <meta name="description" content={`3 tilda, ${DESIGNS} xil dizayn, o‘z domeningiz va umrbod admin panel. ${PRICE}, oylik to‘lovsiz.`} />
       <meta property="og:title" content={`${BRAND} — shaxsiy portfolio sayt`} />
       <meta property="og:image" content="/brand-icon.png" />
       <meta property="og:description" content="Ish beruvchiga rezyume emas — o‘z saytingizni yuboring." />
@@ -119,7 +122,7 @@ export default function InfoPage() {
         <div className="mx-auto max-w-5xl px-5 pt-10 pb-16 sm:pt-16 sm:pb-24 text-center">
           <p className="text-sm font-bold uppercase tracking-[0.22em] text-accent-strong">Shaxsiy portfolio sayt</p>
           <h1 className="mt-4 font-display text-4xl sm:text-6xl font-semibold leading-tight text-balance">Ish beruvchiga rezyume emas — o‘z saytingizni yuboring</h1>
-          <p className="mt-5 text-lg text-muted max-w-2xl mx-auto">3 tilda, 6 xil dizayn, o‘z domeningiz va umrbod admin panel. Hammasi bitta narxda.</p>
+          <p className="mt-5 text-lg text-muted max-w-2xl mx-auto">3 tilda, {DESIGNS} xil dizayn, o‘z domeningiz va umrbod admin panel. Hammasi bitta narxda.</p>
           <p className="mt-8 font-display text-5xl sm:text-6xl font-semibold text-accent-strong">{PRICE}</p>
           <p className="mt-2 text-sm text-muted">bir martalik to‘lov · oylik to‘lov yo‘q</p>
           <div className="mt-8">
@@ -229,7 +232,7 @@ export default function InfoPage() {
           <p className="mt-3 font-display text-2xl sm:text-3xl font-semibold">Saytingizni bugun buyurtma qiling</p>
           <p className="mt-2 text-muted">{PRICE} · bir martalik to‘lov</p>
           <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-fg-2">
-            {["O‘z domeningiz", "3 til", "6 dizayn", "Admin panel"].map((x) => (
+            {["O‘z domeningiz", "3 til", `${DESIGNS} dizayn`, "Admin panel"].map((x) => (
               <li key={x} className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-success" aria-hidden="true" />
                 {x}
