@@ -59,7 +59,7 @@ file, which keeps your free Firestore storage from filling up.
 | 6. Loyihalar | Up to 8 projects: title, summary, domain, tools, date, problem, approach, result, 3 key numbers, up to 3 screenshots, links, "best project" | At least 1, complete |
 | 7. Tajriba va sertifikatlar | Jobs, certificates with images, education, testimonials | All optional |
 | 8. Aloqa va dizayn | Which contacts appear on the site, site style (picks a matching colour), accent colour, light or dark, an example site, notes | — |
-| 9. Tekshirish | Summary with edit buttons, two confirmations: the information is real, and the site does not guarantee a job | Both confirmations |
+| 9. Tekshirish | Summary with edit buttons, and one confirmation that the site does not guarantee a job | The confirmation |
 
 Every field a beginner might freeze at has an example beside it. The project step has worked
 examples for problem, approach and result.

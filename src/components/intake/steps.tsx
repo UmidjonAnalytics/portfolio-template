@@ -137,7 +137,7 @@ export function StepDomain({ d, update, errors }: StepProps) {
                 id={`domain-${i}`}
                 value={v}
                 onChange={(val) => update((x) => ({ ...x, domains: x.domains.map((y, j) => (j === i ? val.toLowerCase().replace(/\s/g, "").replace(/\.uz$/, "") : y)) }))}
-                placeholder={["ismfamiliya", "ism-familiya", "ism-analyst"][i]}
+                placeholder={`websitename${i + 1}`}
                 prefix={`${i + 1}.`}
                 suffix=".uz"
                 maxLength={63}
@@ -888,19 +888,14 @@ export function StepReview({ d, update, errors, goTo }: StepProps & { goTo: (ste
       </div>
 
       <div className="space-y-3">
-        <div data-field="confirmTruth">
-          <Check2 checked={d.confirmTruth} onChange={(confirmTruth) => set({ confirmTruth })} error={!!errors.confirmTruth}>
-            Barcha ma’lumotlar haqiqiy. Loyiha, sertifikat va tajribalarni o‘ylab topmaganman.
-          </Check2>
-        </div>
         <div data-field="confirmNoGuarantee">
           <Check2 checked={d.confirmNoGuarantee} onChange={(confirmNoGuarantee) => set({ confirmNoGuarantee })} error={!!errors.confirmNoGuarantee}>
             Sayt ishga joylashishni kafolatlamasligini tushunaman.
           </Check2>
         </div>
-        {(errors.confirmTruth || errors.confirmNoGuarantee) && (
+        {errors.confirmNoGuarantee && (
           <p className="text-sm text-danger font-medium" role="alert">
-            Yuborish uchun ikkala bandni ham belgilang.
+            Yuborish uchun shu bandni belgilang.
           </p>
         )}
       </div>

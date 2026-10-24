@@ -98,7 +98,6 @@ export function validateStep(step: number, d: IntakeData): IntakeErrors {
       if (!/^#[0-9a-f]{6}$/i.test(d.accentColor)) e.accentColor = "Rangni tanlang";
       break;
     case 9:
-      if (!d.confirmTruth) e.confirmTruth = "Iltimos, tasdiqlang";
       if (!d.confirmNoGuarantee) e.confirmNoGuarantee = "Iltimos, tasdiqlang";
       break;
   }

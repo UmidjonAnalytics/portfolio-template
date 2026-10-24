@@ -159,7 +159,6 @@ export interface IntakeData {
   notes: string;
 
   // 9. Confirmation
-  confirmTruth: boolean;
   confirmNoGuarantee: boolean;
 }
 
@@ -209,7 +208,6 @@ export function emptyIntake(code: string): IntakeData {
     defaultTheme: "dark",
     exampleSite: "",
     notes: "",
-    confirmTruth: false,
     confirmNoGuarantee: false,
   };
 }
