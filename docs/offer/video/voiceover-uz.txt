@@ -15,4 +15,5 @@ voiceover-Charon.wav. Qayta yaratish: python scripts/voiceover.py [ovoz nomi]
 Eslatma: bu model uslub ko‘rsatmasini ham ovoz chiqarib o‘qiydi, shuning uchun faqat matnning
 o‘zi yuboriladi; ohangni ovoz tanlash orqali o‘zgartiring.
 
+Ovozli videolar: promo-Puck.mp4, promo-Kore.mp4, promo-Charon.mp4 (qayta yasash: python scripts/promo_video.py).
 Ovozsiz variant: promo.gif — Telegram uni video kabi ko‘rsatadi.
