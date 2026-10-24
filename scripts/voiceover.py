@@ -3,6 +3,7 @@ Generate the promo voice-over with the Gemini API (text to speech).
 
     python scripts/voiceover.py                 # all voices below, one WAV each
     python scripts/voiceover.py Kore            # one voice
+    python scripts/voiceover.py --story Kore    # the story video's lines
 
 The API key is read from .env.gemini (git-ignored): one line, GEMINI_API_KEY=...
 It is sent only to generativelanguage.googleapis.com and never printed.
@@ -24,6 +25,18 @@ LINES = [
     "Do‘st olib keling — ellik ming so‘m qaytaraman.",
 ]
 VOICES = ["Kore", "Puck", "Charon", "Aoede"]
+
+# The story video (scripts/promo/story.py): one line per part. `--story` selects it, and the files
+# are named voiceover-story-<voice>.wav.
+STORY = [
+    "Ish beruvchiga oddiy rezyume emas — o‘z saytingizni yuboring.",
+    "Sayt uch tilda ishlaydi: o‘zbek, rus va ingliz.",
+    "Olti xil dizayn — kunduzgi va tungi rejimda.",
+    "Loyihalaringiz grafik va natijalar bilan ko‘rsatiladi.",
+    "Telefonda ham, kompyuterda ham chiroyli ochiladi.",
+    "Domen, joylash va to‘ldirish — hammasi to‘rt yuz ellik ming so‘m.",
+    "Saytingizni hoziroq buyurtma qiling!",
+]
 
 
 def key() -> str:
@@ -59,11 +72,14 @@ def tts_model(k: str) -> str:
 def main():
     k = key()
     model = tts_model(k)
-    voices = sys.argv[1:] or VOICES
+    args = sys.argv[1:]
+    story = "--story" in args
+    lines = STORY if story else LINES
+    voices = [a for a in args if not a.startswith("--")] or VOICES
     print("model:", model)
     for voice in voices:
         body = {
-            "contents": [{"parts": [{"text": "\n".join(LINES)}]}],
+            "contents": [{"parts": [{"text": "\n".join(lines)}]}],
             "generationConfig": {
                 "responseModalities": ["AUDIO"],
                 "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}},
@@ -73,7 +89,7 @@ def main():
         part = res["candidates"][0]["content"]["parts"][0]["inlineData"]
         pcm = base64.b64decode(part["data"])
         rate = int(re.search(r"rate=(\d+)", part.get("mimeType", "")).group(1)) if "rate=" in part.get("mimeType", "") else 24000
-        path = os.path.join(OUT, f"voiceover-{voice}.wav")
+        path = os.path.join(OUT, f"voiceover-{'story-' if story else ''}{voice}.wav")
         with wave.open(path, "wb") as w:
             w.setnchannels(1)
             w.setsampwidth(2)
