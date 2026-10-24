@@ -200,7 +200,8 @@ Only used on the owner's own deployment (`NEXT_PUBLIC_INTAKE_ENABLED=true`). See
 
 | Collection | Contents | Access |
 | --- | --- | --- |
-| `orderCodes/{code}` | `{ code, label, isStudent, stage, createdAt }`; stage is `new`, `building` or `done` | Anyone may get one code; only the admin can list or write |
+| `orderCodes/{code}` | `{ code, label, isStudent, stage, createdAt, refCode?, referredBy?, referralPaid? }`; stage is `new`, `building` or `done` | Anyone may get one code; only the admin can list or write |
+| `referrers/{refCode}` | `{ name, orderCode, createdAt }` — a customer's referral code, kept after their order is deleted | Admin only |
 | `intake/{code}` | Every answer of one customer (`IntakeData` in `src/lib/intake/types.ts`); `status` is `draft` or `submitted`; `step` is the furthest step reached | The code holder may get, create and update until submitted; admin everything |
 | `intakeFiles/{id}` | `{ code, name, type, size, chunks, createdAt }` | The code holder may create while the form is open; only the admin can read |
 | `intakeFiles/{id}/chunks/{n}` | `{ d }`, one piece of the file's data URI | Same as above; `n` must be below `chunks` |

@@ -71,7 +71,7 @@ export function Contact() {
 
   return (
     <Section id="contact" eyebrow={t("nav.contact")} title={t("contact.title")} subtitle={t("contact.subtitle")}>
-      <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.2fr_0.8fr]">
         <Reveal>
           {status === "sent" ? (
             <motion.div
@@ -89,7 +89,7 @@ export function Contact() {
             </motion.div>
           ) : (
             <form onSubmit={submit} noValidate className="card p-6 sm:p-8 space-y-5">
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div>
                   <label htmlFor="c-name" className="block text-sm font-semibold mb-1.5">
                     {t("contact.name")}

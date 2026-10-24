@@ -90,6 +90,12 @@ service cloud.firestore {
       allow list, create, update, delete: if isAdmin();
     }
 
+    // Referral codes customers hand to friends. Kept when an order is deleted, so a reward can
+    // still be matched to the person who earned it.
+    match /referrers/{ref} {
+      allow read, write: if isAdmin();
+    }
+
     match /intake/{code} {
       allow get: if isAdmin() || codeValid(code);
       allow list, delete: if isAdmin();

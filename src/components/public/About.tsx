@@ -17,7 +17,7 @@ export function About() {
 
   return (
     <Section id="about" eyebrow={t("nav.about")} title={t("about.title")} subtitle={t("about.subtitle")}>
-      <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr]">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.4fr_0.8fr]">
         <Reveal>
           {loading.profile ? (
             <div className="space-y-3">

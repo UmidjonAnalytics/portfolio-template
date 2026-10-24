@@ -102,7 +102,7 @@ export function Blog() {
           <BlogCard post={first} index={0} variant="hero" />
           {/* Fewer than three left: rows, so a lone card does not sit in an empty grid. */}
           {rest.length > 0 && (
-            <ul className={rest.length < 3 ? "flex flex-col gap-4" : "grid gap-5 sm:grid-cols-2 lg:grid-cols-3"}>
+            <ul className={rest.length < 3 ? "flex flex-col gap-4" : "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"}>
               {rest.map((p, i) => (
                 <li key={p.id}>
                   <BlogCard post={p} index={i + 1} variant={rest.length < 3 ? "row" : "card"} />
@@ -112,7 +112,7 @@ export function Blog() {
           )}
         </div>
       ) : (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((p, i) => (
             <li key={p.id}>
               <BlogCard post={p} index={i} />

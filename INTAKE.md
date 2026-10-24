@@ -51,9 +51,9 @@ file, which keeps your free Firestore storage from filling up.
 
 | Step | Contents | Required |
 | --- | --- | --- |
-| 1. Siz haqingizda | Full name, Gmail, phone, Telegram | Name, Gmail, phone |
+| 1. Siz haqingizda | Full name, Gmail, phone, Telegram, referral code of whoever recommended them | Name, Gmail, phone |
 | 2. Domen va tillar | Three `.uz` domain options with suggestions from the name; which site languages; default language; which language they write in | One domain, one language |
-| 3. Profil | Up to three job titles, one-line tagline, bio, city, spoken languages, availability | Title, tagline, bio (100+ characters), city |
+| 3. Profil | Profession (9 choices: data, developer, designer, SMM, finance, HR, PM, teacher, other — it picks the skills, tools and examples in later steps), up to three job titles, one-line tagline, bio, city, spoken languages, availability | Title, tagline, bio (100+ characters), city |
 | 4. Rasm va rezyume | Photo with do/don't guidance, CV as PDF | Photo |
 | 5. Ko‘nikmalar | 28 common skills to tick, a level for each, custom skills | At least 3 |
 | 6. Loyihalar | Up to 8 projects: title, summary, domain, tools, date, problem, approach, result, 3 key numbers, up to 3 screenshots, links, "best project" | At least 1, complete |
@@ -110,6 +110,22 @@ at `/forma`.
    `NEXT_PUBLIC_ADMIN_EMAILS` to your email, `NEXT_PUBLIC_INTAKE_ENABLED=true` and
    `NEXT_PUBLIC_INTAKE_ONLY=true`.
 3. `npm run release -- <that env file>`, then create your admin user in the Firebase console.
+
+---
+
+## Referrals
+
+Every order gets its own 6-letter **referral code** when you create the link (older orders get one
+when you press the gift button). It is separate from the order code, because the order code opens
+the customer's form. The customer sees their referral code on the thank-you screen after submitting.
+
+A new customer's referral code can come from you (the **Taklif kodi** box when creating the link) or
+from them (step 1 of the form). Buyurtmalar then shows a **Takliflar** box: who brought whom, how much
+is still owed (50 000 so‘m each, `REFERRAL_REWARD` in `src/lib/intake/catalog.ts`) and a
+**qaytarildi** tick box once you have paid. Card numbers are never stored; ask for them on Telegram.
+
+Referral codes live in `referrers/{code}` (admin only), so a reward can still be matched after the
+referrer's own order is deleted.
 
 ---
 

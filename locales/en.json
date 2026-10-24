@@ -116,9 +116,13 @@
     "subtitle": "Tools and techniques I use every day",
     "categories": {
       "all": "All",
-      "bi": "BI Tools",
+      "bi": "BI & analytics",
       "programming": "Programming",
       "databases": "Databases",
+      "design": "Design",
+      "marketing": "Marketing",
+      "finance": "Finance & accounting",
+      "tools": "Work tools",
       "soft": "Soft Skills"
     },
     "proficiency": "Proficiency",

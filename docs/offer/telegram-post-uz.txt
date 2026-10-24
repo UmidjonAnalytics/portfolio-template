@@ -2,17 +2,21 @@
 
 Ish beruvchiga oddiy rezyume emas — o‘z saytingiz havolasini yuboring.
 
+👀 Saytingiz qanday bo‘lishini hoziroq ko‘ring — ismingiz va rasmingizni qo‘yib:
+portfolio-anketa.web.app
+
 Siz olasiz:
 
 🌐 O‘z domeningiz — ismingiz.uz
 ⏰ 24/7 onlayn — sayt kecha-kunduz ishlaydi
 🗣 3 tilda — o‘zbek, rus, ingliz
+🎨 6 xil dizayn — Klassik, Oq-qora, Excel, SQL, Power BI, Notebook
+💼 Har qanday kasb uchun — tahlilchi, dasturchi, dizayner, SMM, buxgalter, HR, o‘qituvchi…
 📱 Telefon, planshet va kompyuterda chiroyli ko‘rinadi
 📊 Loyihalar — filtr, qidiruv va interaktiv grafiklar bilan
 🏅 Sertifikatlar, ish tajribasi va ta’lim bo‘limlari
 📄 «Rezyumeni yuklab olish» tugmasi
 ✉️ Aloqa formasi — xabarlar to‘g‘ridan-to‘g‘ri sizga keladi
-🌙 Yorug‘ va qorong‘i rejim
 ⚙️ Admin panel — dasturchisiz, o‘zingiz yangilab borasiz
 ✍️ Ma’lumotlaringizni saytga o‘zim joylashtiraman
 💸 Hosting uchun oylik to‘lov yo‘q
@@ -20,9 +24,12 @@ Siz olasiz:
 🎁 O‘quvchilarim uchun bonus:
 1:1 videoqo‘ng‘iroq — portfolio va ish izlash bo‘yicha shaxsiy tavsiyalar
 
+🤝 Do‘stingizni olib keling — har bir do‘stingiz uchun 50 000 so‘m kartangizga qaytaraman.
+Taklif kodingizni sayt buyurtma qilganingizdan keyin olasiz.
+
 Qanday ishlaydi:
-1️⃣ To‘lov qilasiz
-2️⃣ Qisqa formani to‘ldirasiz
+1️⃣ To‘lov qilasiz — shaxsiy havola olasiz
+2️⃣ Telefondan oddiy anketani to‘ldirasiz (namunasi: portfolio-anketa.web.app/forma?namuna=1)
 3️⃣ Saytingiz tayyor!
 
 ℹ️ Sayt ishga joylashishni kafolatlamaydi, lekin sizni ish beruvchi oldida professional ko‘rsatadi.

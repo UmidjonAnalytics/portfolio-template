@@ -1,0 +1,17 @@
+15 soniyalik video uchun ovoz matni (Gemini TTS)
+
+Gemini'ga yozing:
+  Read this in Uzbek, in a warm, friendly and energetic voice, at a natural pace, with a short
+  pause between lines:
+
+Matn (har bir qator — bitta sahna, taxminan 3 soniya):
+
+1. O‘z portfolio saytingizni xohlaysizmi? Atigi to‘rt yuz ellik ming so‘m.
+2. To‘lov qilasiz va shaxsiy havola olasiz.
+3. Telefoningizdan oddiy anketani to‘ldirasiz.
+4. Saytingiz tayyor — uch tilda, olti xil dizaynda.
+5. Do‘stingizni taklif qiling va ellik ming so‘m qaytarib oling.
+
+Sahnalar: scene-1.png … scene-5.png (shu papkada), har biri 3 soniya.
+Ovozsiz tayyor variant: promo.gif — Telegram uni avtomatik video kabi ko‘rsatadi.
+Ovozli MP4: CapCut'da 5 ta rasmni ketma-ket qo‘ying, ovoz faylini ustiga tashlang va eksport qiling.

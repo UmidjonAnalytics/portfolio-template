@@ -10,6 +10,7 @@
 
 import type { Availability, Lang, SkillCategory, Theme } from "../types";
 import type { StyleKey } from "@/lib/design";
+import type { JobKey } from "./catalog";
 
 /** Order code issued by the owner after payment. Document id = the code itself. */
 export interface OrderCode {
@@ -21,6 +22,15 @@ export interface OrderCode {
   /** Owner's workflow stage, independent from the form status. */
   stage: "new" | "building" | "done";
   createdAt: number;
+  /**
+   * This customer's own referral code, which they hand to friends. Separate from the order code,
+   * because the order code opens their form.
+   */
+  refCode?: string;
+  /** Referral code of whoever brought this customer, typed by the owner or taken from the form. */
+  referredBy?: string;
+  /** The owner has paid the referral reward for this order. */
+  referralPaid?: boolean;
 }
 
 /** A file the customer uploaded. The bytes live in `intakeFiles/{id}`. */
@@ -114,6 +124,8 @@ export interface IntakeData {
   gmail: string;
   phone: string;
   telegram: string;
+  /** Referral code of the customer who recommended us, if any. */
+  referredBy: string;
 
   // 2. Domain and languages
   domains: string[];
@@ -122,6 +134,8 @@ export interface IntakeData {
   contentLang: Lang;
 
   // 3. Profile
+  /** Profession: decides which skills, tools and examples the form shows (catalog.ts JOBS). */
+  job: JobKey;
   titles: string[];
   tagline: string;
   bio: string;
@@ -180,10 +194,12 @@ export function emptyIntake(code: string): IntakeData {
     gmail: "",
     phone: "",
     telegram: "",
+    referredBy: "",
     domains: ["", "", ""],
     siteLanguages: ["uz", "ru", "en"],
     defaultLang: "uz",
     contentLang: "uz",
+    job: "data",
     titles: ["", "", ""],
     tagline: "",
     bio: "",
@@ -233,6 +249,16 @@ export function generateCode(length = 8): string {
   const bytes = new Uint32Array(length);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join("");
+}
+
+/** Referral codes are six characters from the order-code alphabet. */
+export function generateRefCode(): string {
+  return generateCode(6);
+}
+
+export function normalizeRefCode(raw: string): string {
+  const c = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return /^[A-Z0-9]{6}$/.test(c) ? c : "";
 }
 
 export function normalizeCode(raw: string): string {

@@ -1,7 +1,7 @@
 "use client";
 
 import { collection, deleteDoc, doc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
-import { ClipboardList, Copy, Download, Eye, FileDown, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { ClipboardList, Copy, Download, Eye, FileDown, Gift, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -14,15 +14,24 @@ import { ConfirmDialog, Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { db } from "@/lib/firebase";
 import { useCollection } from "@/lib/hooks";
-import { LANG_LABELS, PROJECT_DOMAIN_OPTIONS, SKILL_CATEGORY_LABELS } from "@/lib/intake/catalog";
+import { LANG_LABELS, PROJECT_DOMAIN_OPTIONS, REFERRAL_REWARD, SKILL_CATEGORY_LABELS, jobOf } from "@/lib/intake/catalog";
 import { deleteIntakeFile, downloadIntakeFile, formatSize, triggerDownload } from "@/lib/intake/files";
 import { buildSitePackage } from "@/lib/intake/to-package";
-import { generateCode, INTAKE_STEPS, intakeEnabled, mergeIntake, type IntakeData, type IntakeFileRef, type OrderCode } from "@/lib/intake/types";
+import { generateCode, generateRefCode, INTAKE_STEPS, intakeEnabled, mergeIntake, normalizeRefCode, type IntakeData, type IntakeFileRef, type OrderCode } from "@/lib/intake/types";
 import { cn, formatDateTime } from "@/lib/utils";
 import { styleMeta } from "@/lib/design";
 import { STYLE_LABELS } from "@/lib/intake/catalog";
 
-type Row = OrderCode & { id: string; intake: IntakeData | null };
+type Row = OrderCode & { id: string; intake: IntakeData | null; /** Referral code that brought this order. */ ref: string };
+
+interface Referrer {
+  id: string;
+  name: string;
+  orderCode: string;
+  createdAt: number;
+}
+
+const som = (n: number) => `${n.toLocaleString("ru-RU")} so‘m`;
 
 const STAGES: { value: OrderCode["stage"]; label: string }[] = [
   { value: "new", label: "Yangi" },
@@ -109,6 +118,7 @@ function Details({ d }: { d: IntakeData }) {
         <KV k="Gmail" v={d.gmail} />
         <KV k="Telefon" v={d.phone} />
         <KV k="Telegram" v={d.telegram} />
+        <KV k="Taklif kodi" v={d.referredBy} />
       </Section>
       <Section title="Domen va tillar">
         <KV k="Domenlar" v={d.domains.filter(Boolean).map((x, i) => `${i + 1}. ${x}.uz`).join("\n")} />
@@ -117,6 +127,7 @@ function Details({ d }: { d: IntakeData }) {
         <KV k="Matnlar tili" v={LANG_LABELS[d.contentLang]} />
       </Section>
       <Section title="Profil">
+        <KV k="Kasb" v={`${jobOf(d.job).icon} ${jobOf(d.job).label}`} />
         <KV k="Lavozimlar" v={d.titles.filter(Boolean).join(", ")} />
         <KV k="Shior" v={d.tagline} />
         <KV k="Tarjimai hol" v={d.bio} />
@@ -242,7 +253,9 @@ export default function OrdersPage() {
 function Orders() {
   const codes = useCollection<OrderCode & { id: string }>("orderCodes", { sort: (items) => [...items].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0)) });
   const intakes = useCollection<IntakeData & { id: string }>("intake");
+  const referrers = useCollection<Referrer>("referrers");
   const [label, setLabel] = useState("");
+  const [refInput, setRefInput] = useState("");
   const [isStudent, setIsStudent] = useState(true);
   const [creating, setCreating] = useState(false);
   const [viewing, setViewing] = useState<Row | null>(null);
@@ -253,9 +266,47 @@ function Orders() {
     const byCode = new Map(intakes.items.map((i) => [i.id, i]));
     return codes.items.map((c) => {
       const raw = byCode.get(c.id);
-      return { ...c, code: c.id, intake: raw ? mergeIntake(c.id, raw) : null };
+      const intake = raw ? mergeIntake(c.id, raw) : null;
+      // The owner's entry wins; otherwise the code the customer typed in the form.
+      const ref = normalizeRefCode(c.referredBy ?? "") || normalizeRefCode(intake?.referredBy ?? "");
+      return { ...c, code: c.id, intake, ref: ref && ref !== c.refCode ? ref : "" };
     });
   }, [codes.items, intakes.items]);
+
+  // Who brought whom. A referrer is known by their saved code, even after their own order is deleted.
+  const referralGroups = useMemo(() => {
+    const names = new Map(referrers.items.map((r) => [r.id, r.name]));
+    for (const r of rows) if (r.refCode && !names.has(r.refCode)) names.set(r.refCode, r.intake?.fullName || r.label);
+    const groups = new Map<string, Row[]>();
+    for (const r of rows) if (r.ref) groups.set(r.ref, [...(groups.get(r.ref) ?? []), r]);
+    return [...groups.entries()].map(([code, brought]) => ({ code, name: names.get(code) ?? "", brought }));
+  }, [rows, referrers.items]);
+  const owed = referralGroups.reduce((n, g) => n + g.brought.filter((b) => !b.referralPaid).length, 0);
+
+  /** Give an order its own referral code (new orders get one automatically). */
+  const ensureRefCode = async (row: { id: string; label: string; refCode?: string }, name?: string) => {
+    if (row.refCode) return row.refCode;
+    const refCode = generateRefCode();
+    await setDoc(doc(db, "referrers", refCode), { name: (name || row.label).trim(), orderCode: row.id, createdAt: Date.now() });
+    await updateDoc(doc(db, "orderCodes", row.id), { refCode });
+    return refCode;
+  };
+
+  const copyRef = async (row: Row) => {
+    try {
+      const refCode = await ensureRefCode(row, row.intake?.fullName);
+      const text = `Do‘stlaringizga shu kodni bering: ${refCode}. Ular anketada yozsa, sizga ${som(REFERRAL_REWARD)} qaytaraman.`;
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.success(`Taklif kodi nusxalandi: ${refCode}`);
+      } catch {
+        toast.message(text);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Kod yaratib bo‘lmadi");
+    }
+  };
 
   const copy = async (code: string) => {
     try {
@@ -270,9 +321,13 @@ function Orders() {
     setCreating(true);
     try {
       const code = generateCode();
-      const order: OrderCode = { code, label: label.trim(), isStudent, stage: "new", createdAt: Date.now() };
+      const refCode = generateRefCode();
+      const referredBy = normalizeRefCode(refInput);
+      const order: OrderCode = { code, label: label.trim(), isStudent, stage: "new", createdAt: Date.now(), refCode, ...(referredBy ? { referredBy } : {}) };
+      await setDoc(doc(db, "referrers", refCode), { name: label.trim(), orderCode: code, createdAt: Date.now() });
       await setDoc(doc(db, "orderCodes", code), order);
       setLabel("");
+      setRefInput("");
       await copy(code);
     } catch (e) {
       console.error(e);
@@ -343,6 +398,14 @@ function Orders() {
         <h2 className="font-display font-semibold">Yangi anketa havolasi</h2>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Mijozning ismi (o‘zingiz uchun)" className={cn(inputClass, "sm:flex-1")} aria-label="Mijozning ismi" maxLength={80} />
+          <input
+            value={refInput}
+            onChange={(e) => setRefInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6))}
+            placeholder="Taklif kodi"
+            title="Kim taklif qilgan bo‘lsa, uning 6 belgili kodi (ixtiyoriy)"
+            className={cn(inputClass, "sm:w-36 font-mono uppercase")}
+            aria-label="Taklif kodi (ixtiyoriy)"
+          />
           <div className="shrink-0">
             <Toggle checked={isStudent} onChange={setIsStudent} label="O‘quvchim" description="1:1 videoqo‘ng‘iroq bonusi" />
           </div>
@@ -351,8 +414,53 @@ function Orders() {
             Havola yaratish
           </Button>
         </div>
-        <p className="text-xs text-muted">Havola avtomatik nusxalanadi — uni mijozga Telegram orqali yuboring.</p>
+        <p className="text-xs text-muted">
+          Havola avtomatik nusxalanadi — uni mijozga Telegram orqali yuboring. Mijozni kimdir taklif qilgan bo‘lsa, uning kodini yozing; mijoz anketada ham yozishi mumkin.
+        </p>
       </div>
+
+      {referralGroups.length > 0 && (
+        <div className="card p-5 mb-6">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-display font-semibold inline-flex items-center gap-2">
+              <Gift className="h-4 w-4 text-accent-strong" aria-hidden="true" />
+              Takliflar
+            </h2>
+            <p className={cn("text-sm font-semibold", owed ? "text-warning" : "text-success")}>
+              {owed ? `Qaytarilishi kerak: ${som(owed * REFERRAL_REWARD)}` : "Hammasi qaytarilgan"}
+            </p>
+          </div>
+          <p className="mt-1 text-xs text-muted">Pulni taklif qilgan odamning kartasiga o‘tkazing va belgilang. Karta raqami bu yerda saqlanmaydi — uni Telegram’da so‘rang.</p>
+          <ul className="mt-4 space-y-3">
+            {referralGroups.map((g) => (
+              <li key={g.code} className="rounded-2xl border border-line p-3">
+                <p className="text-sm font-semibold">
+                  {g.name || "Noma’lum kod"} <span className="ml-1 font-mono text-xs text-muted">{g.code}</span>
+                  {!g.name && <span className="ml-2 text-xs font-normal text-warning">bunday kod topilmadi — tekshiring</span>}
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {g.brought.map((b) => (
+                    <li key={b.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                      <span>
+                        → {b.intake?.fullName || b.label || b.id} <span className="font-mono text-xs text-muted">{b.id}</span>
+                      </span>
+                      <label className="inline-flex items-center gap-2 font-semibold cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!b.referralPaid}
+                          onChange={(e) => updateDoc(doc(db, "orderCodes", b.id), { referralPaid: e.target.checked }).catch(() => toast.error("Saqlab bo‘lmadi"))}
+                          className="h-4 w-4 accent-[var(--accent)]"
+                        />
+                        {som(REFERRAL_REWARD)} qaytarildi
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {codes.loading ? (
         <div className="space-y-2">
@@ -371,6 +479,7 @@ function Orders() {
                   <p className="font-semibold truncate">{row.intake?.fullName || row.label || "Nomsiz"}</p>
                   <StatusBadge intake={row.intake} />
                   {row.isStudent && <Badge tone="accent">O‘quvchi</Badge>}
+                  {row.ref && <Badge tone={row.referralPaid ? "success" : "warning"}>Taklif: {row.ref}</Badge>}
                 </div>
                 <p className="mt-1 text-xs text-muted">
                   <span className="font-mono font-bold text-fg-2">{row.id}</span> · {formatDateTime(row.createdAt, "uz")}
@@ -390,6 +499,15 @@ function Orders() {
                     </option>
                   ))}
                 </select>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyRef(row)}
+                  aria-label="Mijozning taklif kodi"
+                  title={row.refCode ? `Mijozning taklif kodi: ${row.refCode} (nusxalash)` : "Mijozga taklif kodi yaratish va nusxalash"}
+                >
+                  <Gift className="h-4 w-4" aria-hidden="true" />
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => copy(row.id)} aria-label="Havolani nusxalash" title="Havolani nusxalash">
                   <Copy className="h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -440,7 +558,11 @@ function Orders() {
       <ConfirmDialog
         open={!!deleting}
         title={`«${deleting?.intake?.fullName || deleting?.label || deleting?.id}» o‘chirilsinmi?`}
-        description="Havola, anketa va barcha yuklangan fayllar butunlay o‘chiriladi."
+        description={
+          deleting?.ref && !deleting.referralPaid
+            ? `Havola, anketa va fayllar o‘chiriladi. Diqqat: bu mijozni ${deleting.ref} kodi egasi taklif qilgan va ${som(REFERRAL_REWARD)} hali qaytarilmagan — avval qaytaring.`
+            : "Havola, anketa va barcha yuklangan fayllar butunlay o‘chiriladi. Mijozning taklif kodi saqlanib qoladi."
+        }
         confirmLabel="O‘chirish"
         cancelLabel="Bekor qilish"
         onConfirm={remove}

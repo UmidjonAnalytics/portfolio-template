@@ -116,9 +116,13 @@
     "subtitle": "Har kuni ishlatadigan vositalar va usullarim",
     "categories": {
       "all": "Barchasi",
-      "bi": "BI vositalari",
+      "bi": "BI va tahlil",
       "programming": "Dasturlash",
       "databases": "Ma’lumotlar bazalari",
+      "design": "Dizayn",
+      "marketing": "Marketing",
+      "finance": "Moliya va buxgalteriya",
+      "tools": "Ish vositalari",
       "soft": "Shaxsiy ko‘nikmalar"
     },
     "proficiency": "Bilim darajasi",

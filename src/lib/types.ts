@@ -95,8 +95,9 @@ export interface SiteSettings {
   updatedAt?: number;
 }
 
-export type SkillCategory = "bi" | "programming" | "databases" | "soft";
-export const SKILL_CATEGORIES: SkillCategory[] = ["bi", "programming", "databases", "soft"];
+export type SkillCategory = "bi" | "programming" | "databases" | "design" | "marketing" | "finance" | "tools" | "soft";
+/** Display order on the site. Groups with no skills are hidden. */
+export const SKILL_CATEGORIES: SkillCategory[] = ["bi", "programming", "databases", "design", "marketing", "finance", "tools", "soft"];
 
 export interface Skill extends BaseItem {
   name: Localized;

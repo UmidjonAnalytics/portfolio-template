@@ -2,7 +2,7 @@
 
 import { Check, Pencil, Star, X } from "lucide-react";
 import { useState } from "react";
-import { ACCENT_PRESETS, LANG_LABELS, STYLE_LABELS, PROJECT_DOMAIN_OPTIONS, PROJECT_TOOL_OPTIONS, SKILL_CATALOG, SKILL_CATEGORY_LABELS, SKILL_LEVELS } from "@/lib/intake/catalog";
+import { ACCENT_PRESETS, JOBS, LANG_LABELS, REFERRAL_REWARD, STYLE_LABELS, PROJECT_DOMAIN_OPTIONS, SKILL_CATALOG, SKILL_CATEGORY_LABELS, SKILL_LEVELS, jobOf, skillsFor, toolsFor } from "@/lib/intake/catalog";
 import type { IntakeCertificate, IntakeData, IntakeEducation, IntakeExperience, IntakeProject, IntakeSkill, IntakeTestimonial } from "@/lib/intake/types";
 import { localId } from "@/lib/intake/types";
 import { isGmail, type IntakeErrors } from "@/lib/intake/validate";
@@ -77,6 +77,20 @@ export function StepAbout({ d, update, errors }: StepProps) {
       </Q>
       <Q label="Telegram" htmlFor="telegram" optional hint="Saytdagi Telegram tugmasi ham shu nomga ochiladi.">
         <Text id="telegram" value={d.telegram} onChange={(telegram) => set({ telegram: telegram.replace(/\s/g, "") })} placeholder="@username" />
+      </Q>
+      <Q
+        label="Sizni kimdir taklif qildimi?"
+        htmlFor="referredBy"
+        optional
+        hint={`Taklif qilgan odam bergan 6 belgili kodni yozing. U ${REFERRAL_REWARD.toLocaleString("ru-RU")} so‘m bonus oladi, sizga hech narsa qo‘shilmaydi.`}
+      >
+        <Text
+          id="referredBy"
+          value={d.referredBy}
+          onChange={(referredBy) => set({ referredBy: referredBy.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) })}
+          placeholder="Masalan: K7M2QX"
+          maxLength={6}
+        />
       </Q>
     </div>
   );
@@ -204,8 +218,35 @@ export function StepDomain({ d, update, errors }: StepProps) {
 
 export function StepProfile({ d, update, errors }: StepProps) {
   const { set } = useHelpers(update);
+  const job = jobOf(d.job);
   return (
     <div className="space-y-7">
+      <Q label="Kasbingiz" hint="Keyingi bosqichlarda shu kasbga mos ko‘nikmalar, vositalar va namunalar chiqadi.">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Kasbingiz">
+          {JOBS.map((j) => {
+            const on = d.job === j.key;
+            return (
+              <button
+                key={j.key}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                onClick={() => set({ job: j.key })}
+                className={cn(
+                  "min-h-14 rounded-2xl border px-3 py-2 text-left text-sm font-semibold inline-flex items-center gap-2 transition",
+                  on ? "border-accent bg-accent-soft/60 text-fg" : "border-line bg-surface text-fg-2 hover:border-line-strong",
+                )}
+              >
+                <span className="text-xl" aria-hidden="true">
+                  {j.icon}
+                </span>
+                {j.label}
+              </button>
+            );
+          })}
+        </div>
+      </Q>
+
       <Q label="Lavozim yoki kasbingiz — 1 dan 3 tagacha" field="titles.0" error={errors["titles.0"]} hint="Saytning bosh qismida navbatma-navbat yozilib turadi.">
         <div className="space-y-2">
           {d.titles.map((v, i) => (
@@ -214,7 +255,7 @@ export function StepProfile({ d, update, errors }: StepProps) {
               id={`title-${i}`}
               value={v}
               onChange={(val) => update((x) => ({ ...x, titles: x.titles.map((y, j) => (j === i ? val : y)) }))}
-              placeholder={["Data Analyst", "Power BI Developer", "SQL mutaxassisi"][i]}
+              placeholder={job.titles[i]}
               maxLength={60}
               error={i === 0 && !!errors["titles.0"]}
             />
@@ -222,8 +263,8 @@ export function StepProfile({ d, update, errors }: StepProps) {
         </div>
       </Q>
 
-      <Q label="Bir gap bilan o‘zingiz haqingizda" htmlFor="tagline" field="tagline" error={errors.tagline} hint="Masalan: «Tartibsiz jadvallarni aniq qarorlarga aylantiraman.»">
-        <Text id="tagline" value={d.tagline} onChange={(tagline) => set({ tagline })} placeholder="Ma’lumotlarni tushunarli dashbordlarga aylantiraman." maxLength={160} error={!!errors.tagline} />
+      <Q label="Bir gap bilan o‘zingiz haqingizda" htmlFor="tagline" field="tagline" error={errors.tagline} hint="Qisqa va aniq: nima qilasiz va kimga foyda berasiz.">
+        <Text id="tagline" value={d.tagline} onChange={(tagline) => set({ tagline })} placeholder={job.tagline} maxLength={160} error={!!errors.tagline} />
       </Q>
 
       <div className="space-y-3">
@@ -241,7 +282,7 @@ export function StepProfile({ d, update, errors }: StepProps) {
             rows={8}
             counter={100}
             error={!!errors.bio}
-            placeholder={"Men Toshkentda yashovchi ma’lumotlar tahlilchisiman…\n\nExcel, SQL va Power BI bilan hisobotlar tayyorlayman…\n\nHozir chakana savdo yoki bank sohasida ish qidiryapman…"}
+            placeholder={`Men Toshkentda yashovchi ${job.key === "other" ? "mutaxassisman" : job.label.toLowerCase().split(" ")[0]}…\n\n${job.tools.slice(0, 3).join(", ") || "Asosiy vositalarim"} bilan ishlayman…\n\nHozir qanday ish yoki loyiha qidirayotganingiz…`}
           />
         </Q>
       </div>
@@ -320,7 +361,9 @@ export function StepPhoto({ d, update, errors, code }: StepProps) {
 
 export function StepSkills({ d, update, errors }: StepProps) {
   const [custom, setCustom] = useState("");
-  const [customCat, setCustomCat] = useState<SkillCategory>("bi");
+  const [showAll, setShowAll] = useState(false);
+  const shown = showAll ? SKILL_CATALOG : skillsFor(d.job);
+  const [customCat, setCustomCat] = useState<SkillCategory>(shown.find((x) => x.category !== "soft")?.category ?? "tools");
   const has = (key: string) => d.skills.some((s) => s.key === key);
 
   const toggle = (key: string) =>
@@ -341,11 +384,14 @@ export function StepSkills({ d, update, errors }: StepProps) {
 
   return (
     <div className="space-y-7">
-      <p className="text-fg-2">Biladigan vositalaringizni belgilang, keyin har biriga daraja qo‘ying. Kamida 3 ta.</p>
-      {SKILL_CATEGORIES.map((cat) => (
+      <p className="text-fg-2">
+        Biladigan vositalaringizni belgilang, keyin har biriga daraja qo‘ying. Kamida 3 ta.
+        {!showAll && d.job !== "other" && <> Ro‘yxat «{jobOf(d.job).label}» kasbiga moslangan.</>}
+      </p>
+      {SKILL_CATEGORIES.filter((cat) => shown.some((s) => s.category === cat)).map((cat) => (
         <Q key={cat} label={SKILL_CATEGORY_LABELS[cat]}>
           <div className="flex flex-wrap gap-2">
-            {SKILL_CATALOG.filter((s) => s.category === cat).map((s) => {
+            {shown.filter((s) => s.category === cat).map((s) => {
               const on = has(s.key);
               return (
                 <button
@@ -367,6 +413,12 @@ export function StepSkills({ d, update, errors }: StepProps) {
         </Q>
       ))}
 
+      {d.job !== "other" && (
+        <button type="button" onClick={() => setShowAll((v) => !v)} className="text-sm font-semibold text-accent-strong hover:underline">
+          {showAll ? "Faqat kasbimga moslarini ko‘rsatish" : "Boshqa sohalardagi ko‘nikmalarni ham ko‘rsatish"}
+        </button>
+      )}
+
       <Q label="Ro‘yxatda yo‘q ko‘nikma" optional>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
@@ -378,7 +430,7 @@ export function StepSkills({ d, update, errors }: StepProps) {
                 addCustom();
               }
             }}
-            placeholder="Masalan: Airflow"
+            placeholder={d.job === "data" ? "Masalan: Airflow" : "Masalan: Tilda"}
             maxLength={40}
             className={cn(inputCls, "border-line flex-1")}
             aria-label="Ko‘nikma nomi"
@@ -470,7 +522,17 @@ const newProject = (): IntakeProject => ({
 export function StepProjects({ d, update, errors, code }: StepProps) {
   const { setItem, addItem, removeItem, set } = useHelpers(update);
   const e = (i: number, f: string) => errors[`projects.${i}.${f}`];
-  const toolOptions = PROJECT_TOOL_OPTIONS.map((t) => ({ value: t, label: t }));
+  const job = jobOf(d.job);
+  const ex = job.project;
+  const [extraTool, setExtraTool] = useState<Record<string, string>>({});
+  // The job's tools plus any the customer typed, so a custom tool stays selectable.
+  const toolOptions = [...new Set([...toolsFor(d.job), ...d.projects.flatMap((p) => p.tools)])].map((t) => ({ value: t, label: t }));
+  const addTool = (id: string) => {
+    const name = (extraTool[id] ?? "").trim().slice(0, 40);
+    if (!name) return;
+    setItem("projects", id, (x) => ({ ...x, tools: x.tools.includes(name) ? x.tools : [...x.tools, name] }));
+    setExtraTool((m) => ({ ...m, [id]: "" }));
+  };
 
   return (
     <div className="space-y-6">
@@ -488,29 +550,48 @@ export function StepProjects({ d, update, errors, code }: StepProps) {
       {d.projects.map((p, i) => (
         <Card key={p.id} title={`${i + 1}-loyiha`} onRemove={() => removeItem("projects", p.id)}>
           <Q label="Loyiha nomi" htmlFor={`p-${p.id}-title`} field={`projects.${i}.title`} error={e(i, "title")}>
-            <Text id={`p-${p.id}-title`} value={p.title} onChange={(title) => setItem("projects", p.id, (x) => ({ ...x, title }))} placeholder="Do‘kon savdosi dashbordi" maxLength={90} error={!!e(i, "title")} />
+            <Text id={`p-${p.id}-title`} value={p.title} onChange={(title) => setItem("projects", p.id, (x) => ({ ...x, title }))} placeholder={ex.title} maxLength={90} error={!!e(i, "title")} />
           </Q>
           <Q label="Bir gap bilan qisqacha" htmlFor={`p-${p.id}-summary`} field={`projects.${i}.summary`} error={e(i, "summary")} hint="Loyiha kartochkasida ko‘rinadi.">
-            <Text id={`p-${p.id}-summary`} value={p.summary} onChange={(summary) => setItem("projects", p.id, (x) => ({ ...x, summary }))} placeholder="14 ta Excel faylini bitta Power BI hisobotiga aylantirdim." maxLength={160} error={!!e(i, "summary")} />
+            <Text id={`p-${p.id}-summary`} value={p.summary} onChange={(summary) => setItem("projects", p.id, (x) => ({ ...x, summary }))} placeholder={ex.summary} maxLength={160} error={!!e(i, "summary")} />
           </Q>
           <Q label="Soha" field={`projects.${i}.domain`} error={e(i, "domain")}>
             <Chips options={PROJECT_DOMAIN_OPTIONS} value={p.domain ? [p.domain] : []} onChange={(v) => setItem("projects", p.id, (x) => ({ ...x, domain: v.filter((y) => y !== x.domain)[0] ?? "" }))} />
           </Q>
           <Q label="Qaysi vositalar bilan?" field={`projects.${i}.tools`} error={e(i, "tools")}>
             <Chips options={toolOptions} value={p.tools} onChange={(tools) => setItem("projects", p.id, (x) => ({ ...x, tools }))} />
+            <div className="mt-2 flex gap-2">
+              <input
+                value={extraTool[p.id] ?? ""}
+                onChange={(ev) => setExtraTool((m) => ({ ...m, [p.id]: ev.target.value }))}
+                onKeyDown={(ev) => {
+                  if (ev.key === "Enter") {
+                    ev.preventDefault();
+                    addTool(p.id);
+                  }
+                }}
+                placeholder="Boshqa vosita"
+                aria-label="Boshqa vosita"
+                maxLength={40}
+                className={cn(inputCls, "border-line flex-1 sm:max-w-xs")}
+              />
+              <button type="button" onClick={() => addTool(p.id)} className="h-[50px] px-4 rounded-2xl border border-line bg-surface font-semibold hover:border-line-strong">
+                Qo‘shish
+              </button>
+            </div>
           </Q>
           <Q label="Qachon qilingan?" htmlFor={`p-${p.id}-date`} optional>
             <input id={`p-${p.id}-date`} type="month" value={p.date} onChange={(ev) => setItem("projects", p.id, (x) => ({ ...x, date: ev.target.value }))} className={cn(inputCls, "border-line sm:max-w-xs")} />
           </Q>
 
           <Q label="Muammo nima edi?" htmlFor={`p-${p.id}-problem`} field={`projects.${i}.problem`} error={e(i, "problem")} hint="Kimda qanday muammo bor edi va nega u muhim edi?">
-            <Area id={`p-${p.id}-problem`} value={p.problem} onChange={(problem) => setItem("projects", p.id, (x) => ({ ...x, problem }))} rows={3} error={!!e(i, "problem")} placeholder="Do‘kon har hafta 14 ta alohida Excel faylda hisobot olardi, raqamlar mos kelmasdi va yig‘ilishda vaqt behuda ketardi." />
+            <Area id={`p-${p.id}-problem`} value={p.problem} onChange={(problem) => setItem("projects", p.id, (x) => ({ ...x, problem }))} rows={3} error={!!e(i, "problem")} placeholder={ex.problem} />
           </Q>
           <Q label="Siz nima qildingiz?" htmlFor={`p-${p.id}-approach`} field={`projects.${i}.approach`} error={e(i, "approach")} hint="Qaysi vositalar bilan, qanday qadamlar bilan hal qildingiz?">
-            <Area id={`p-${p.id}-approach`} value={p.approach} onChange={(approach) => setItem("projects", p.id, (x) => ({ ...x, approach }))} rows={3} error={!!e(i, "approach")} placeholder="Ma’lumotlarni SQL orqali bitta jadvalga yig‘dim, Power BI’da model qurdim va asosiy ko‘rsatkichlar uchun DAX formulalar yozdim." />
+            <Area id={`p-${p.id}-approach`} value={p.approach} onChange={(approach) => setItem("projects", p.id, (x) => ({ ...x, approach }))} rows={3} error={!!e(i, "approach")} placeholder={ex.approach} />
           </Q>
           <Q label="Natija qanday bo‘ldi?" htmlFor={`p-${p.id}-result`} field={`projects.${i}.result`} error={e(i, "result")} hint="Iloji bo‘lsa, raqam bilan. Taxminiy bo‘lsa ham bo‘ladi.">
-            <Area id={`p-${p.id}-result`} value={p.result} onChange={(result) => setItem("projects", p.id, (x) => ({ ...x, result }))} rows={3} error={!!e(i, "result")} placeholder="Haftalik hisobot vaqti 6 soatdan 15 daqiqaga tushdi, rahbariyat endi bitta raqamga tayanadi." />
+            <Area id={`p-${p.id}-result`} value={p.result} onChange={(result) => setItem("projects", p.id, (x) => ({ ...x, result }))} rows={3} error={!!e(i, "result")} placeholder={ex.result} />
           </Q>
 
           <Q label="Asosiy raqamlar" optional hint="Loyiha kartochkasida katta qilib ko‘rsatiladi. Masalan: «-96%» — «Hisobot vaqti».">
@@ -520,7 +601,7 @@ export function StepProjects({ d, update, errors, code }: StepProps) {
                   <input
                     value={m.value}
                     onChange={(ev) => setItem("projects", p.id, (x) => ({ ...x, metrics: x.metrics.map((y, j) => (j === mi ? { ...y, value: ev.target.value } : y)) }))}
-                    placeholder={["-96%", "60", "$4.2M"][mi]}
+                    placeholder={ex.metrics[mi]?.[0]}
                     maxLength={16}
                     aria-label={`${mi + 1}-raqam`}
                     className={cn(inputCls, "border-line font-mono")}
@@ -528,7 +609,7 @@ export function StepProjects({ d, update, errors, code }: StepProps) {
                   <input
                     value={m.label}
                     onChange={(ev) => setItem("projects", p.id, (x) => ({ ...x, metrics: x.metrics.map((y, j) => (j === mi ? { ...y, label: ev.target.value } : y)) }))}
-                    placeholder={["Hisobot vaqti", "Do‘konlar soni", "Oylik tushum"][mi]}
+                    placeholder={ex.metrics[mi]?.[1]}
                     maxLength={40}
                     aria-label={`${mi + 1}-raqam nomi`}
                     className={cn(inputCls, "border-line")}

@@ -119,7 +119,7 @@ function Dots({ level }: { level: number }) {
 function ChipGroups({ skills, present }: { skills: Skill[]; present: SkillCategory[] }) {
   const { t, tr } = useLocale();
   return (
-    <div className="grid gap-5 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {present.map((c, gi) => (
         <Reveal key={c} delay={gi * 0.06} className="card p-5 sm:p-6">
           <h3 className="text-xs font-bold uppercase tracking-wider text-muted">
@@ -234,7 +234,7 @@ export function Skills() {
             <SkillTable skills={filtered} />
           ) : (
             <LayoutGroup>
-              <motion.ul layout className={layout === "rings" ? "grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
+              <motion.ul layout className={layout === "rings" ? "grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"}>
                 <AnimatePresence mode="popLayout">
                   {filtered.map((s, i) => (layout === "rings" ? <SkillRing key={s.id} skill={s} index={i} /> : <SkillBar key={s.id} skill={s} index={i} />))}
                 </AnimatePresence>

@@ -53,7 +53,7 @@ export function Experience() {
   return (
     <Section id="experience" eyebrow={t("nav.experience")} title={t("experience.title")} subtitle={t("experience.subtitle")}>
       {layout === "cards" ? (
-        <ol className="grid gap-5 md:grid-cols-2">
+        <ol className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {experience.map((item, i) => (
             <li key={item.id}>
               <Reveal delay={i * 0.05} className={cn("card p-6 h-full", !item.endDate && "border-t-4 border-t-accent")}>

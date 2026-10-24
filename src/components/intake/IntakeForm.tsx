@@ -5,6 +5,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, CloudOff, Ey
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
+import { REFERRAL_REWARD } from "@/lib/intake/catalog";
 import { INTAKE_STEPS, SAMPLE_CODE, emptyIntake, mergeIntake, normalizeCode, type IntakeData, type OrderCode } from "@/lib/intake/types";
 import { firstInvalidStep, validateStep, type IntakeErrors } from "@/lib/intake/validate";
 import { cn } from "@/lib/utils";
@@ -87,6 +88,35 @@ function CodeEntry({ invalid }: { invalid?: boolean }) {
         Anketa namunasini ko‘rish
       </a>
     </CenterCard>
+  );
+}
+
+/** Shown after submitting: the customer's own code to hand to friends. */
+function ReferralCard({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="mt-6 rounded-2xl border border-accent/40 bg-accent-soft/50 p-4 text-left">
+      <p className="font-semibold">Do‘stingizni taklif qiling</p>
+      <p className="mt-1 text-sm text-fg-2 leading-relaxed">
+        Do‘stingiz sayt buyurtma qilib, anketada shu kodni yozsa, sizga {REFERRAL_REWARD.toLocaleString("ru-RU")} so‘m kartangizga qaytaraman.
+      </p>
+      <div className="mt-3 flex items-center gap-2">
+        <span className="flex-1 rounded-xl bg-surface border border-line px-3 py-2.5 text-center font-mono text-xl font-bold tracking-[0.3em]">{code}</span>
+        <Button
+          variant="outline"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(code);
+              setCopied(true);
+            } catch {
+              /* the code is on screen to copy by hand */
+            }
+          }}
+        >
+          {copied ? "Nusxalandi" : "Nusxalash"}
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -313,6 +343,7 @@ export function IntakeForm() {
         <h1 className="mt-4 font-display text-2xl font-semibold">Rahmat{d?.fullName ? `, ${d.fullName.split(" ")[0]}` : ""}!</h1>
         <p className="mt-3 text-fg-2 leading-relaxed">Anketangiz qabul qilindi. Tez orada siz bilan Telegram yoki telefon orqali bog‘lanaman.</p>
         <p className="mt-3 text-sm text-muted leading-relaxed">Biror narsani o‘zgartirish kerak bo‘lsa, menga yozing — anketani qayta ochib beraman.</p>
+        {order?.refCode && <ReferralCard code={order.refCode} />}
       </CenterCard>
     );
 

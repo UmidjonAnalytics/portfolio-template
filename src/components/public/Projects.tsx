@@ -269,7 +269,7 @@ export function Projects() {
             className={cn(
               layout === "compact" && "grid gap-3 grid-cols-2 lg:grid-cols-4",
               layout === "stacked" && "flex flex-col gap-6",
-              layout === "grid" && (view === "grid" ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-4"),
+              layout === "grid" && (view === "grid" ? "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-4"),
             )}
           >
             <AnimatePresence mode="popLayout">

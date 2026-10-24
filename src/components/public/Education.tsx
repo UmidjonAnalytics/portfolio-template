@@ -69,7 +69,7 @@ export function Education() {
           ))}
         </Reveal>
       ) : (
-        <ol className="grid gap-5 md:grid-cols-2">
+        <ol className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {education.map((item, i) => (
             <li key={item.id}>
               <Reveal delay={i * 0.06} className="card p-6 h-full flex gap-4">

@@ -147,7 +147,7 @@ export function Certificates() {
           </ul>
         </Reveal>
       ) : (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {certificates.map((c, i) => (
             <li key={c.id}>
               <CertificateCard item={c} index={i} onOpen={() => setActive(c)} />

@@ -1,8 +1,8 @@
 "use client";
 
-import { animate, motion, useInView, useReducedMotion } from "framer-motion";
+import { animate, motion, useInView } from "framer-motion";
 import { ArrowDown, Download, FolderKanban, Mail } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEntrance, useLayout } from "@/lib/design-context";
 import { useLocale } from "@/lib/i18n";
 import { mediaToDownloadUrl } from "@/lib/media";
@@ -20,10 +20,7 @@ function useTyping(words: string[], enabled: boolean) {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (!enabled || words.length === 0) {
-      setText(words[0] ?? "");
-      return;
-    }
+    if (!enabled || words.length === 0) return;
     const full = words[index % words.length];
     let delay = deleting ? 40 : 75;
     if (!deleting && text === full) delay = 2200;
@@ -49,13 +46,15 @@ function useTyping(words: string[], enabled: boolean) {
     setIndex(0);
   }, [words]);
 
-  return text;
+  // Without motion the first title simply stands there; no state, so nothing can reset it.
+  return enabled ? text : (words[0] ?? "");
 }
 
 function Counter({ value, label }: { value: number; label: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-10% 0px" });
-  const reduce = useReducedMotion();
+  // Counting up is an animation too: off when the visitor or the owner turned motion off.
+  const { off: reduce } = useEntrance();
   const [display, setDisplay] = useState(reduce ? value : 0);
 
   useEffect(() => {
@@ -92,13 +91,14 @@ const AVAILABILITY_TONE: Record<Availability, "success" | "accent" | "neutral"> 
 export function Hero() {
   const { profile, projects, loading } = useSiteData();
   const { t, trl, tr } = useLocale();
-  const reduce = useReducedMotion();
   const layout = useLayout("hero");
   const { off, from, to, time } = useEntrance();
+  const reduce = off;
   const [cvBusy, setCvBusy] = useState(false);
 
-  const titles = trl(profile.titles);
-  const words = titles.length ? titles : [t("hero.defaultTitle")];
+  // A stable array, so the typing effect only restarts when the titles really change.
+  const wordsKey = trl(profile.titles).join("\n") || t("hero.defaultTitle");
+  const words = useMemo(() => wordsKey.split("\n"), [wordsKey]);
   const typed = useTyping(words, !reduce);
   const name = profile.name || t("hero.defaultName");
   const tagline = tr(profile.tagline) || t("hero.defaultTagline");
