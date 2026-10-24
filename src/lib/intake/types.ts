@@ -165,6 +165,12 @@ export interface IntakeData {
 
 export const INTAKE_STEPS = 9;
 
+/**
+ * Code of the sample form at /forma?namuna=1: the real form for people to look at before buying.
+ * Six characters, so it can never match a real eight-character order code. Nothing is saved.
+ */
+export const SAMPLE_CODE = "NAMUNA";
+
 export function emptyIntake(code: string): IntakeData {
   return {
     code,

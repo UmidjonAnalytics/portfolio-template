@@ -1,18 +1,18 @@
 "use client";
 
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, CloudOff, Loader2, Send } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, CloudOff, Eye, Loader2, Send } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
-import { INTAKE_STEPS, mergeIntake, normalizeCode, type IntakeData, type OrderCode } from "@/lib/intake/types";
+import { INTAKE_STEPS, SAMPLE_CODE, emptyIntake, mergeIntake, normalizeCode, type IntakeData, type OrderCode } from "@/lib/intake/types";
 import { firstInvalidStep, validateStep, type IntakeErrors } from "@/lib/intake/validate";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { STEP_TITLES, StepAbout, StepDesign, StepDomain, StepExtras, StepPhoto, StepProfile, StepProjects, StepReview, StepSkills, type Update } from "./steps";
 import { inputCls } from "./ui";
 
-type Phase = "loading" | "no-code" | "invalid" | "form" | "submitted" | "error";
+type Phase = "loading" | "no-code" | "invalid" | "form" | "submitted" | "sample-done" | "error";
 type SaveState = "idle" | "saving" | "saved" | "offline";
 
 const backupKey = (code: string) => `intake-backup-${code}`;
@@ -82,6 +82,10 @@ function CodeEntry({ invalid }: { invalid?: boolean }) {
           Davom etish
         </Button>
       </form>
+      <a href="/forma?namuna=1" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-strong hover:underline">
+        <Eye className="h-4 w-4" aria-hidden="true" />
+        Anketa namunasini ko‘rish
+      </a>
     </CenterCard>
   );
 }
@@ -104,7 +108,8 @@ function SaveBadge({ state }: { state: SaveState }) {
 
 export function IntakeForm() {
   const params = useSearchParams();
-  const code = normalizeCode(params.get("kod") ?? "");
+  const sample = !params.get("kod") && params.get("namuna") === "1";
+  const code = sample ? SAMPLE_CODE : normalizeCode(params.get("kod") ?? "");
   const [phase, setPhase] = useState<Phase>("loading");
   const [order, setOrder] = useState<OrderCode | null>(null);
   const [d, setD] = useState<IntakeData | null>(null);
@@ -125,6 +130,13 @@ export function IntakeForm() {
   useEffect(() => {
     let cancelled = false;
     loaded.current = false;
+    // Sample: an empty form straight away. loaded stays false, so autosave never runs.
+    if (sample) {
+      setD(emptyIntake(SAMPLE_CODE));
+      setStep(1);
+      setPhase("form");
+      return;
+    }
     if (!code) {
       setPhase("no-code");
       return;
@@ -162,7 +174,7 @@ export function IntakeForm() {
     return () => {
       cancelled = true;
     };
-  }, [code]);
+  }, [code, sample]);
 
   // Autosave: local backup immediately, Firestore after a short pause.
   const pending = useRef<number | null>(null);
@@ -214,6 +226,8 @@ export function IntakeForm() {
 
   const next = () => {
     if (!d) return;
+    // The sample lets people look through every step without filling anything in.
+    if (sample) return goTo(Math.min(step + 1, INTAKE_STEPS));
     const errs = validateStep(step, d);
     setErrors(errs);
     if (Object.keys(errs).length) {
@@ -227,6 +241,11 @@ export function IntakeForm() {
 
   const submit = async () => {
     if (!d) return;
+    if (sample) {
+      setPhase("sample-done");
+      window.scrollTo({ top: 0 });
+      return;
+    }
     const bad = firstInvalidStep(d);
     if (bad) {
       const errs = validateStep(bad, d);
@@ -276,6 +295,17 @@ export function IntakeForm() {
         </Button>
       </CenterCard>
     );
+  if (phase === "sample-done")
+    return (
+      <CenterCard>
+        <Eye className="mx-auto h-12 w-12 text-accent" aria-hidden="true" />
+        <h1 className="mt-4 font-display text-2xl font-semibold">Bu namuna edi</h1>
+        <p className="mt-3 text-fg-2 leading-relaxed">To‘lovdan keyin shu anketaning shaxsiy havolasini olasiz. Javoblaringiz saqlanadi va saytingiz shu ma’lumotlardan yig‘iladi.</p>
+        <Button className="mt-6" variant="outline" onClick={() => window.location.reload()}>
+          Namunani boshidan ko‘rish
+        </Button>
+      </CenterCard>
+    );
   if (phase === "submitted" || !d)
     return (
       <CenterCard>
@@ -297,7 +327,14 @@ export function IntakeForm() {
             <p className="font-display text-sm font-semibold">
               <span className="text-accent-strong">/</span> Anketa
             </p>
-            <SaveBadge state={save} />
+            {sample ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-bold text-accent-strong">
+                <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                Namuna
+              </span>
+            ) : (
+              <SaveBadge state={save} />
+            )}
           </div>
           <div className="mt-2 flex items-center gap-3">
             <div className="h-1.5 flex-1 rounded-full bg-surface-2 overflow-hidden" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={INTAKE_STEPS} aria-label="Bosqich">
@@ -311,6 +348,29 @@ export function IntakeForm() {
       </header>
 
       <div ref={topRef} className="mx-auto max-w-2xl px-4 pt-8 pb-32">
+        {sample && (
+          <div className="mb-6 rounded-2xl border border-accent/40 bg-accent-soft/50 px-4 py-3 text-sm leading-relaxed">
+            <p className="font-semibold">Bu anketaning namunasi.</p>
+            <p className="mt-0.5 text-fg-2">Hech narsa saqlanmaydi va hech kimga yuborilmaydi. Bosqichlarni to‘ldirmasdan ham ko‘rib chiqishingiz mumkin.</p>
+            <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Bosqichga o‘tish">
+              {STEP_TITLES.map((title, i) => (
+                <button
+                  key={title}
+                  type="button"
+                  onClick={() => goTo(i + 1)}
+                  aria-current={step === i + 1 ? "step" : undefined}
+                  title={title}
+                  className={cn(
+                    "h-8 min-w-8 px-2 rounded-full border text-xs font-bold tabular-nums transition",
+                    step === i + 1 ? "bg-accent text-accent-fg border-accent" : "bg-surface border-line text-fg-2 hover:border-line-strong",
+                  )}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {step === 1 && order?.label && <p className="text-sm font-semibold text-accent-strong">Salom, {order.label}!</p>}
         <h1 className="mt-1 font-display text-2xl sm:text-3xl font-semibold">{STEP_TITLES[step - 1]}</h1>
 

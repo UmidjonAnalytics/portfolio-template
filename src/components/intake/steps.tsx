@@ -57,7 +57,7 @@ export function StepAbout({ d, update, errors }: StepProps) {
         orqali boshqa qurilmadan ham davom ettirishingiz mumkin.
       </Tip>
       <Q label="Ism va familiyangiz" htmlFor="fullName" field="fullName" error={errors.fullName} hint="Saytda aynan shunday yoziladi.">
-        <Text id="fullName" value={d.fullName} onChange={(fullName) => set({ fullName })} placeholder="Masalan: Abror Ashurov" autoComplete="name" maxLength={80} error={!!errors.fullName} />
+        <Text id="fullName" value={d.fullName} onChange={(fullName) => set({ fullName })} placeholder="Masalan: Jasur Karimov" autoComplete="name" maxLength={80} error={!!errors.fullName} />
       </Q>
       <Q
         label="Gmail manzilingiz"

@@ -79,6 +79,9 @@ same project is also the **demo site** you show to people before they buy:
   styles and block layouts. All of it stays in their browser; nothing is saved. The demo's default
   look is set in Admin → Design.
 - Form: <https://portfolio-anketa.web.app/forma?kod=…> (personal links only)
+- Sample form: <https://portfolio-anketa.web.app/forma?namuna=1> — the same form, no link needed,
+  nothing saved, with buttons to jump between steps. Also linked from Buyurtmalar and from the
+  "wrong link" page.
 - Admin: <https://portfolio-anketa.web.app/admin> → **Buyurtmalar**, plus every content page for the
   demo
 - Config: `.env.orders` on your computer (git-ignored), with `NEXT_PUBLIC_INTAKE_ENABLED=true` and

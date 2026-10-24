@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, writeBatch } from "firebase/firestore";
 import { db } from "../firebase";
 import { compressImage } from "../media";
 import type { IntakeFileRef } from "./types";
+import { SAMPLE_CODE } from "./types";
 
 /**
  * Intake uploads live in Firestore because Cloud Storage needs the paid Blaze plan.
@@ -47,6 +48,14 @@ export interface UploadOptions {
 }
 
 export async function uploadIntakeFile(code: string, file: File, opts: UploadOptions = {}): Promise<IntakeFileRef> {
+  // The sample form keeps files in the page only: the preview shows, nothing reaches Firestore.
+  if (code === SAMPLE_CODE) {
+    const ref: IntakeFileRef = { id: `sample-${Date.now()}`, name: file.name.slice(0, 200), type: file.type, size: file.size };
+    const thumb = await makeThumb(file);
+    if (thumb) ref.thumb = thumb;
+    opts.onProgress?.(100);
+    return ref;
+  }
   const isImage = file.type.startsWith("image/") && file.type !== "image/svg+xml";
   const blob: Blob = isImage ? await compressImage(file, { maxDimension: opts.maxDimension ?? 1600, quality: 0.85, targetBytes: 600 * 1024 }) : file;
   if (blob.size > MAX_FILE_BYTES) throw new Error("too-large");

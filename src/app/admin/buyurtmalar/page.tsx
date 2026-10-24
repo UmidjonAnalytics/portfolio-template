@@ -328,7 +328,16 @@ function Orders() {
 
   return (
     <>
-      <PageHeader title="Buyurtmalar" subtitle="To‘lovdan keyin mijozga anketa havolasini yuboring." />
+      <PageHeader
+        title="Buyurtmalar"
+        subtitle="To‘lovdan keyin mijozga anketa havolasini yuboring."
+        action={
+          <Button href="/forma?namuna=1" external variant="outline" size="sm">
+            <Eye className="h-4 w-4" aria-hidden="true" />
+            Anketa namunasi
+          </Button>
+        }
+      />
 
       <div className="card p-5 mb-6 space-y-4">
         <h2 className="font-display font-semibold">Yangi anketa havolasi</h2>
