@@ -55,9 +55,9 @@ function applyClass(resolved: "light" | "dark") {
 /**
  * Inline script executed before first paint (see app/layout.tsx). Keep in sync with the
  * storage keys above. It reads: theme choice, site defaults cache, language, accent colour and,
- * outside /admin and /forma, the site design (style, background, density).
+ * outside /admin, /forma and /info, the site design (style, background, density).
  */
-export const PRE_PAINT_SCRIPT = `(function(){try{var d={};try{d=JSON.parse(localStorage.getItem('${DEFAULTS_STORAGE_KEY}')||'{}')||{}}catch(e){}var t=localStorage.getItem('${THEME_STORAGE_KEY}')||d.theme||'system';var dark=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var h=document.documentElement;if(dark){h.classList.add('dark')}h.style.colorScheme=dark?'dark':'light';var l=localStorage.getItem('lang')||d.lang;if(l){h.lang=l}if(d.accent&&/^#[0-9a-fA-F]{6}$/.test(d.accent)){h.style.setProperty('--accent',d.accent);if(d.accentFg)h.style.setProperty('--accent-fg',d.accentFg)}if(!/^.(admin|forma)/.test(location.pathname)){var w=/^[a-z]{2,12}$/;if(w.test(d.style))h.dataset.style=d.style;if(w.test(d.bg))h.dataset.bg=d.bg;if(w.test(d.density))h.dataset.density=d.density}}catch(e){}})();`;
+export const PRE_PAINT_SCRIPT = `(function(){try{var d={};try{d=JSON.parse(localStorage.getItem('${DEFAULTS_STORAGE_KEY}')||'{}')||{}}catch(e){}var t=localStorage.getItem('${THEME_STORAGE_KEY}')||d.theme||'system';var dark=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var h=document.documentElement;if(dark){h.classList.add('dark')}h.style.colorScheme=dark?'dark':'light';var l=localStorage.getItem('lang')||d.lang;if(l){h.lang=l}if(d.accent&&/^#[0-9a-fA-F]{6}$/.test(d.accent)){h.style.setProperty('--accent',d.accent);if(d.accentFg)h.style.setProperty('--accent-fg',d.accentFg)}if(!/^.(admin|forma|info)/.test(location.pathname)){var w=/^[a-z]{2,12}$/;if(w.test(d.style))h.dataset.style=d.style;if(w.test(d.bg))h.dataset.bg=d.bg;if(w.test(d.density))h.dataset.density=d.density}}catch(e){}})();`;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");

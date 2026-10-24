@@ -35,7 +35,7 @@ STORY = [
     "Loyihalaringiz grafik va natijalar bilan ko‘rsatiladi.",
     "Telefonda ham, kompyuterda ham chiroyli ochiladi.",
     "Sayt umrbod sizniki. Karyerangizdagi har bir yangilikni admin panel orqali o‘zingiz qo‘shasiz.",
-    "Domen, joylash va to‘ldirish — hammasi to‘rt yuz ellik ming so‘m.",
+    "Domen, joylash va oson savol-javob anketasi — hammasi to‘rt yuz ellik ming so‘m.",
     "Saytingizni hoziroq buyurtma qiling!",
 ]
 

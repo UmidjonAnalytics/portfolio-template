@@ -13,7 +13,7 @@
  * Uses the Firebase CLI's own login (`firebase login`). Nothing here reads credentials.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -80,6 +80,9 @@ if (!rulesOnly) {
   buildEnv.NEXT_PUBLIC_ADMIN_EMAILS = admins.join(",");
   run("npx", ["next", "build"], buildEnv);
   if (!existsSync(resolve(root, "out", "index.html"))) fail("Build finished but out/index.html is missing");
+  // The product page (/info) plays the promo; only the orders deployment has that page.
+  const promo = resolve(root, "docs", "offer", "video", "promo-story-Charon.mp4");
+  if (env.NEXT_PUBLIC_INTAKE_ENABLED === "true" && existsSync(promo)) copyFileSync(promo, resolve(root, "out", "promo.mp4"));
 }
 
 // 2. Rules for this project only: replace the admin list in firestore.rules.

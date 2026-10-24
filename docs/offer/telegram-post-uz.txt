@@ -5,6 +5,8 @@ Ish beruvchiga oddiy rezyume emas — o‘z saytingiz havolasini yuboring.
 👀 Saytingiz qanday bo‘lishini hoziroq ko‘ring — ismingiz va rasmingizni qo‘yib:
 portfolio-anketa.web.app
 
+ℹ️ Batafsil ma’lumot va savollar: portfolio-anketa.web.app/info
+
 Siz olasiz:
 
 🌐 O‘z domeningiz — ismingiz.uz
@@ -18,7 +20,7 @@ Siz olasiz:
 📄 «Rezyumeni yuklab olish» tugmasi
 ✉️ Aloqa formasi — xabarlar to‘g‘ridan-to‘g‘ri sizga keladi
 ⚙️ Admin panel — dasturchisiz, o‘zingiz yangilab borasiz
-✍️ Ma’lumotlaringizni saytga o‘zim joylashtiraman
+✍️ Oson to‘ldirish — telefondan savol-javob anketasi, sayt javoblardan avtomatik yig‘iladi
 💸 Hosting uchun oylik to‘lov yo‘q
 
 🎁 O‘quvchilarim uchun bonus:

@@ -60,11 +60,12 @@ PARTS = [
 
 # Device placements per layout: (device, screen size, top-left of the device body).
 LAYOUTS = {
-    "laptop": [("laptop", (960, 600), (60, 640))],
+    # Laptop x is its screen bezel; the base sticks out 60 px each side. Values centre each layout.
+    "laptop": [("laptop", (960, 600), (42, 640))],
     "tablet": [("tablet", (600, 864), (224, 470))],
     "phone": [("phone", (392, 848), (333, 470))],
     "duo": [("laptop", (840, 525), (60, 520)), ("phone", (260, 563), (760, 960))],
-    "trio": [("laptop", (840, 525), (60, 470)), ("tablet", (330, 475), (70, 1080)), ("phone", (226, 489), (760, 1130))],
+    "trio": [("laptop", (840, 525), (102, 470)), ("tablet", (330, 475), (150, 1100)), ("phone", (226, 489), (678, 1100))],
 }
 
 
@@ -242,7 +243,7 @@ def price_card(img, p):
     a = ease_out(clamp(p))
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
-    items = ["Shaxsiy domen (.uz)", "Joylash — 24/7, oylik to‘lovsiz", "Ma’lumotlaringizni o‘zim to‘ldiraman", "3 til · 6 dizayn · admin panel"]
+    items = ["Shaxsiy domen (.uz)", "Joylash — 24/7, oylik to‘lovsiz", "Oson to‘ldirish — savol-javob orqali", "3 til · 6 dizayn · admin panel"]
     f = font(FONT_B, 40)
     x0, y0, w_, h_ = 90, 1010, 900, 72 * len(items) + 60
     off = int((1 - a) * 80)
