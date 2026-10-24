@@ -1,17 +1,18 @@
-15 soniyalik video uchun ovoz matni (Gemini TTS)
+15 soniyalik video uchun ovoz matni
 
-Gemini'ga yozing:
-  Read this in Uzbek, in a warm, friendly and energetic voice, at a natural pace, with a short
-  pause between lines:
+Har bir qator — bitta sahna (scene-1.png … scene-5.png), taxminan 3 soniya:
 
-Matn (har bir qator — bitta sahna, taxminan 3 soniya):
+1. Shaxsiy portfolio sayt — atigi to‘rt yuz ellik ming so‘m.
+2. To‘lov qilasiz — shaxsiy havola olasiz.
+3. Telefondan oddiy anketani to‘ldirasiz.
+4. Saytingiz tayyor: uch tilda, olti xil dizaynda.
+5. Do‘st olib keling — ellik ming so‘m qaytaraman.
 
-1. O‘z portfolio saytingizni xohlaysizmi? Atigi to‘rt yuz ellik ming so‘m.
-2. To‘lov qilasiz va shaxsiy havola olasiz.
-3. Telefoningizdan oddiy anketani to‘ldirasiz.
-4. Saytingiz tayyor — uch tilda, olti xil dizaynda.
-5. Do‘stingizni taklif qiling va ellik ming so‘m qaytarib oling.
+Tayyor ovozlar (Gemini TTS, gemini-3.8-flash-tts): voiceover-Puck.wav, voiceover-Kore.wav,
+voiceover-Charon.wav. Qayta yaratish: python scripts/voiceover.py [ovoz nomi]
+(kalit .env.gemini faylida, GitHub'ga chiqmaydi).
 
-Sahnalar: scene-1.png … scene-5.png (shu papkada), har biri 3 soniya.
-Ovozsiz tayyor variant: promo.gif — Telegram uni avtomatik video kabi ko‘rsatadi.
-Ovozli MP4: CapCut'da 5 ta rasmni ketma-ket qo‘ying, ovoz faylini ustiga tashlang va eksport qiling.
+Eslatma: bu model uslub ko‘rsatmasini ham ovoz chiqarib o‘qiydi, shuning uchun faqat matnning
+o‘zi yuboriladi; ohangni ovoz tanlash orqali o‘zgartiring.
+
+Ovozsiz variant: promo.gif — Telegram uni video kabi ko‘rsatadi.
